@@ -1,5 +1,5 @@
 # ArchivesSpace Collection Control Toolbox
-Simple tools to help you start making the most of collection control functionality in ArchivesSpace
+Simple tools to make the most of collection control functionality in ArchivesSpace
 
 # Requirements
 
