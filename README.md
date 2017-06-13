@@ -14,18 +14,18 @@ Simple tools to help you start making the most of collection control functionali
 
 ### container_profile_template.csv
 
-#### Use this spreadsheet to enter your container profile data
+* Use this spreadsheet to enter your container profile data
 
 ### create_container_profiles.py
 
-#### This script takes the data from your container_profile_template spreadsheet and posts to ArchivesSpace
+* This script takes the data from your container_profile_template spreadsheet and posts to ArchivesSpace
 
 ## Locations
 
 ### locations_template.csv
 
-#### Use this spreadsheet to enter your location data
+* Use this spreadsheet to enter your location data
 
 ### create_locations.py
 
-#### This script takes the data from your completed locations_template spreadsheet and posts to ArchivesSpace
+* This script takes the data from your completed locations_template spreadsheet and posts to ArchivesSpace
