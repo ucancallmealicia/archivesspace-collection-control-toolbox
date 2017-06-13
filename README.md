@@ -10,10 +10,22 @@ Simple tools to help you start making the most of collection control functionali
 
 # Tools
 
-## Create Container Profiles in Batch
+## Container Profiles
+
+### container_profile_template.csv
+
+#### Use this spreadsheet to enter your container profile data
 
 ### create_container_profiles.py
 
-## Create Locations in Batch
+#### This script takes the data from your container_profile_template spreadsheet and posts to ArchivesSpace
+
+## Locations
+
+### locations_template.csv
+
+#### Use this spreadsheet to enter your location data
 
 ### create_locations.py
+
+#### This script takes the data from your completed locations_template spreadsheet and posts to ArchivesSpace
