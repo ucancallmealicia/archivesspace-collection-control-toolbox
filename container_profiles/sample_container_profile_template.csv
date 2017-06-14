@@ -1,0 +1,10 @@
+name,extent_dimension,height,width,depth,dimension units
+CD case,width,6,1,6,inches
+archive legal,width,10,5,16,inches
+archive half legal,width,11,3,16,inches
+flat box (16d 3h 20w),width,3,12,16,inches
+flat box (9d 3h 12w),width,3,12,9,inches
+flat box (26d 3h 27w),width,3,27,26,inches
+microcassette,width,1,2,3,inches
+chest,width,9,22,15,inches
+folder (36d 48w),width,0.25,48,36,inches
