@@ -3,7 +3,9 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 ## What's in this Toolbox
 
-* 
+* SQL scripts to analyze your data and prepare update spreadsheets
+* Python scripts to make bulk updates to collection control data
+* SQL scripts to report on your collection control data
 
 ## General Tips:
 
@@ -27,19 +29,27 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 * Retrieve archival objects to which you would like to add container instances
 
-#### Get Container Profiles
+#### get_container_profiles.sql
 
-#### Get Locations
+* Gets a list of container profiles with titles and URIs
 
-#### Get Top Containers/Barcodes
+#### get_locations.sql
+
+* Gets a list of locations with titles and URIs
+
+#### get_top_containers.sql
+
+* Gets a list of existing top containers, with location and container profile data
 
 ### Reporting
 
 #### Container Lists
 
+* Retrieves a container list for a given collection
+
 #### Access Restrictions
 
-#### Container Types
+* Retrieves a list of restricted materials of a given type or end date
 
 ## API Tools
 
@@ -53,8 +63,7 @@ Quickly add collection control data to ArchivesSpace using spreadsheets and the 
 * Access to ArchivesSpace API
 
 ### Container Profiles
-
-* Add container profiles to ArchivesSpace
+Add container profiles to ArchivesSpace
 
 #### container_profile_template.csv
 
@@ -65,8 +74,7 @@ Quickly add collection control data to ArchivesSpace using spreadsheets and the 
 * This script takes the data from your container_profile_template spreadsheet and posts to ArchivesSpace
 
 ### Locations
-
-* Add locations data to ArchivesSpace
+Add locations data to ArchivesSpace
 
 #### locations_template.csv
 
@@ -86,11 +94,9 @@ Quickly add collection control data to ArchivesSpace using spreadsheets and the 
 
 ##### create_top_containers.py
 
-* This script takes the data from your completed top_container_template spreadsheet and poss to ArchivesSpace
+* This script takes the data from your completed top_container_template spreadsheet and posts to ArchivesSpace
 
-#### Update Top Containers
-
-#### Link Top Container Instances to One or More Archival Objects
+#### Link Top Containers to One or More Archival Objects
 
 ##### tc_instance_template.csv
 
@@ -100,7 +106,10 @@ Quickly add collection control data to ArchivesSpace using spreadsheets and the 
 
 * This script takes the data from your completed tc_instance_template spreadsheet and posts to ArchivesSpace
 
+#### Update Top Containers
+
 ### Restrictions
+Add machine-actionable restrictions to ArchivesSpace
 
 #### restrictions_template.csv
 
