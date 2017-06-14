@@ -1,3 +1,7 @@
+#This SQL script retrieves a list of container profiles from the ArchivesSpace database
+#The container profile URIs from this list can be used to add container profiles to your 
+#top containers in the create_top_container.py script included this toolbox
+
 SELECT cp.name
     , cp.extent_dimension
     , cp.height
