@@ -5,7 +5,7 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 * SQL scripts to analyze your data and prepare update spreadsheets
 * Python scripts to make bulk updates to collection control data
-* SQL scripts to report on your collection control data
+* More SQL scripts to report on your collection control data
 
 ## General Tips:
 
