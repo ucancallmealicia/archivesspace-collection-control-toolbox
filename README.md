@@ -13,7 +13,7 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 ## Database Tools
 
 * Analyze your data to identify remediation needs
-* Run reports on your holdings once your collection control data is in ArchivesSpace
+* Run reports on your holdings once collection control data is in ArchivesSpace
 
 ### Requirements
 
@@ -26,6 +26,12 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 #### Get Archival Objects
 
 * Retrieve archival objects to which you would like to add container instances
+
+#### Get Container Profiles
+
+#### Get Locations
+
+#### Get Top Containers/Barcodes
 
 ### Reporting
 
@@ -72,11 +78,27 @@ Quickly add collection control data to ArchivesSpace using spreadsheets and the 
 
 ### Top Containers
 
-#### Create Instances
+#### Create Top Containers
 
-#### Update Instances
+##### top_container_template.csv
 
-#### Link an Instance to One or More Archival Objects
+* Use this spreadsheet to enter your top container data
+
+##### create_top_containers.py
+
+* This script takes the data from your completed top_container_template spreadsheet and poss to ArchivesSpace
+
+#### Update Top Containers
+
+#### Link Top Container Instances to One or More Archival Objects
+
+##### tc_instance_template.csv
+
+* Use this spreadsheet to enter your top container instance data
+
+##### create_container_instance.py
+
+* This script takes the data from your completed tc_instance_template spreadsheet and posts to ArchivesSpace
 
 ### Restrictions
 
@@ -98,4 +120,3 @@ Quickly add collection control data to ArchivesSpace using spreadsheets and the 
 * ArchivesSpace API reference
 * Python 3 Syntax
 * SQL Syntax
-* 
