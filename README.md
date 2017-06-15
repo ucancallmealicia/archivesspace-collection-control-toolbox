@@ -5,7 +5,9 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 * SQL scripts to analyze your data and prepare update spreadsheets
 * Python scripts to make bulk updates to collection control data
-* More SQL scripts to report on your collection control data
+* More SQL scripts to report on your updated collection control data
+* FAQ
+* Suggestions for further study
 
 ## General Tips:
 
@@ -19,7 +21,7 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 ### Requirements
 
-* SQL Client (i.e. SQL Workbench, HeidiSQL)
+* SQL Client (i.e. MySQL Workbench, HeidiSQL)
 * ArchivesSpace 1.5+
 * Access to ArchivesSpace database
 
@@ -123,9 +125,22 @@ Add machine-actionable restrictions to ArchivesSpace
 
 #### Barcode Audit
 
-## Further Reading/Tutorials
+## FAQ
 
-* Installing third-party Python modules
-* ArchivesSpace API reference
-* Python 3 Syntax
-* SQL Syntax
+### How do I log into the ArchivesSpace API?
+
+### How do I access the ArchivesSpace database?
+
+### I'm logged in. I have access. Now what?
+
+## Software Downloads/Tutorials/Further Reading
+
+* Python 3: https://www.python.org/downloads/
+* HeidiSQL: https://www.heidisql.com/download.php
+* MySQL Workbench: https://dev.mysql.com/downloads/workbench/
+* Installing third-party Python modules: https://python4astronomers.github.io/installation/packages.html
+                                         https://docs.python.org/3/installing/
+* ArchivesSpace API reference: http://archivesspace.github.io/archivesspace/api/ 
+* Python 3 Syntax: https://docs.python.org/3/tutorial/
+* SQL Syntax: https://dev.mysql.com/doc/refman/5.7/en/tutorial.html
+
