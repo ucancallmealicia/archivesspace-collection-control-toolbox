@@ -1,0 +1,1 @@
+resource URI,local_access_restriction_type,access_restriction_text,restriction begin date (optional),restriction end date (optional)

@@ -1,0 +1,7 @@
+resource URI,local_access_restriction_type,access_restriction_text,restriction begin date (optional),restriction end date (optional)
+/repositories/12/resources/1231,RestrictedFragileSpecColl,This collection is fragile; patrons must use surrogates,1999-04-21,
+/repositories/12/resources/1831,RestrictedFragileSpecColl,This collection is fragile; patrons must use surrogates,,
+/repositories/12/resources/1293,RestrictedCurApprSpecColl,Repository-imposed access restriction,,2001-08-13
+/repositories/12/resources/1892,RestrictedCurApprSpecColl,Repository-imposed access restriction,2006-09-12,2019-05-01
+/repositories/12/resources/1892,InPrcessSpecColl,This collection is in process and access is restricted,2017-06-10,2017-07-04
+/repositories/12/resources/1892,RestrictedSpecColl,Donor-imposed access restriction,2000-01-27,2045-01-24
