@@ -113,13 +113,21 @@ Add locations data to ArchivesSpace
 ### Restrictions
 Add machine-actionable restrictions to ArchivesSpace
 
-#### restrictions_template.csv
+#### resource_level_restrictions_template.csv
 
-* Use this spreadsheet to enter your restriction data
+* Use this spreadsheet to enter your resource-level restriction data
 
-#### add_restrictions.py
+#### create_resource_restrictions.py
 
-* This script takes the data from your completed restrictions_template spreadsheet and posts to ArchivesSpace
+* This script takes the data from your completed resource_level_restrictions_template spreadsheet and posts to ArchivesSpace
+
+#### archival_object_level_restrictions_template.csv
+
+* Use this spreadsheet to enter your archival object-level restriction data
+
+#### create_archival_object_restrictions.py
+
+* This script takes the data from your completed archival_object_level_restrictions_template spreadsheet and posts to ArchivesSpace
 
 ### Reporting with Python and SQL
 
