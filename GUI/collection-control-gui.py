@@ -6,18 +6,15 @@
 #TO-DO, QUESTIONS:
 
 #disable user entry into text box? Not sure if this matters
-#Write outfile parts of AS update scripts into a function - lots of repeated code
 #additional error handling if necessary
 #general script cleanup
 #add comments as necessary
 #add timer - would really like a '...script running...' message but it doesn't work how I want it to - shows up after it finishes...
 #Write README - create troubleshooting doc (to consult when the something went wrong message comes up - common errors)
 #color?
-#bind trackpad, allow for selection of text 
+#bind trackpad, allow for selection of text
 
-#make sure output file doesn't fail when there already is an output file in the folder (I think it appends...)
-
-#when user clicks NO after choosing an action the error log still appears...
+#error handling for when wrong spreadsheet is chosen/wrong update button pressed
 
 #restructure GUI setup into classes
 
@@ -48,7 +45,7 @@ from tkinter import ttk
 from tkinter import scrolledtext as tkst
 import json, requests, csv, os, sys, subprocess, time, logging, re
 
-#-----------------------------------------------------GUI FILE HANDLING FUNCTIONS--------------------------------------------------
+#-----------------------------------------------------GUI FILE/ERROR HANDLING FUNCTIONS--------------------------------------------------
 
 #select directory for output file
 def prewritefile():
@@ -59,10 +56,15 @@ def prewritefile():
 #create output file
 def writefile():
     directoryname = txt_name.get()
-    f = open(directoryname + '/output.txt', 'a')
-    txtfile = directoryname + '/output.txt'
-    txt_file.set(str(txtfile))
-    return f
+    if txt_name.get() == '':
+        error_dialog.set('No directory chosen')
+        messagebox.showinfo('Error!', error_dialog.get())
+        return
+    else:
+        f = open(directoryname + '/output.txt', 'a')
+        txtfile = directoryname + '/output.txt'
+        txt_file.set(str(txtfile))
+        return f
 
 #read output file
 def readfile():
@@ -109,19 +111,26 @@ def csvopen():
 
 #message box confirming actions, that script is about run
 def areyousure():
-    result = messagebox.askyesno('Action Chosen', '     Click Yes to make updates, No to cancel')
+    result = messagebox.askyesno('Action Chosen', '             Are you sure? \n\n  Click Yes to make updates \n        Click No to cancel')
     if result == True:
-        results = messagebox.showinfo('Updates Initialized', 'Updates initialized. This may take a few moments. Press OK to continue')
+        results = messagebox.showinfo('Updates Initialized', 'This may take a few moments \n\n     Press OK to continue')
     if result == False:
-        false = messagebox.showinfo('Updates Canceled. Press OK')
+        false = messagebox.showinfo('Updates Canceled', '       Updates Canceled \n\n Press OK to return to menu')
     return result
+
+def csverror():
+    error_dialog.set('Invalid CSV')
+    messagebox.showinfo('Error!', error_dialog.get())               
 
 #message box if an error happens with the update, logs error to file
 def errors():
     errormessage = messagebox.showerror('Error!', 'Something went wrong. Check error log for details')
-    #make sure this works on all systems...
-    log_file.set('/tmp/error_log.log')
-    logging.basicConfig(filename='/tmp/error_log.log', level=logging.DEBUG,
+    #make sure this works on all systems...add another temp folder for pre-Windows 10?
+    if sys.platform == "win32":
+        log_file.set('\\Windows\\Temp\\error_log.log')
+    else:
+        log_file.set('/tmp/error_log.log')
+    logging.basicConfig(filename=log_file.get(), level=logging.DEBUG,
                         format='%(asctime)s %(levelname)s %(name)s %(message)s')
     logging.exception('Error: ')
 
@@ -132,28 +141,36 @@ def script_finished():
 def client_exit():
     exit()
 
-def counter(value):
-    value = value + 1
-    return value
-
-def outfileprocess(txtfile, jsonname, countervar):
+def outfileprocess(txtfile, jsonname):
     for key, value in jsonname.items():
         if key == 'status':
             txtfile.write('%s:%s\n' % (key, value))
-            counters = counter(countervar)
-            counters = counters + 1
+            #Allows for modification of the counters in the AS API functions; globvar not ideal but works for now
+            global x
+            x += 1
         if key == 'uri':
             txtfile.write('%s:%s\n' % (key, value) + '\n')
         if key == 'error':
             txtfile.write('%s:%s\n' % (key, value) + '\n')
-    return counters
+    updates_success.set(x)
 
-def counterval(counters):
-    updates_success.set(counters)
+def timer(start):
+    elapsedTime = time.time() - start
+    m, s = divmod(elapsedTime, 60)
+    h, m = divmod(m, 60)
+    elapsed_time.set('%d:%02d:%02d' % (h, m, s))
 
-#def spreadsheet_input(
+def wrongcsv():
+    error_dialog.set('Invalid CSV')
+    messagebox.showinfo('Error!', error_dialog.get())
+
+def spreadsheet_error():
+    error_dialog.set('Something went wrong. Please check spreadsheet for errors')
+    messagebox.showinfo('Error!', error_dialog.get())
 
 #--------------------------------------------------------AS API FUNCTIONS---------------------------------------------------------
+
+#something to think about - do I want a class APIUpdates, with members being these functions?
 
 #logs in to ArchivesSpace API
 def asloginprocess(event=None):
@@ -190,17 +207,16 @@ def asloginprocess(event=None):
                 headers = {'X-ArchivesSpace-Session':session}
                 login_confirmed.set('Login successful!')
                 authenticate.set(headers)
-                print(authenticate.get())
                 return headers
-    #this captures a URL that is valid but not correct
+    #this captures a URL that is valid but not correct, plus any other errors
     except Exception:
-        login_confirmed.set('Not a valid ArchivesSpace URL, try again')
+        login_confirmed.set('Error, check login info and try again')
 
+#gets headers without logging in to API again - a bit of a hack but it works for now
 def head():
     h = authenticate.get()
     accept_json = h.replace("'", "\"")
     heads = json.loads(accept_json)
-    print(heads)
     return heads
 
 #add container profiles to AS
@@ -215,6 +231,7 @@ def containerprofiles():
             #variable to hold count of update attempts
             i = 0
             #variable to hold count of objects successfully updated
+            global x
             x = 0
             for row in csvin:
                 name = row[0]
@@ -228,19 +245,12 @@ def containerprofiles():
                                          'width': width, 'depth': depth, 'dimension_units': dimension_units}
                 container_profile_data = json.dumps(new_container_profile)
                 create_profile = requests.post(api_address.get() + '/container_profiles', headers=headers.get(), data=container_profile_data).json()
-                #write this into a function (use create_profile as argument?)
-                writeoutfile = outfileprocess(txtfile, create_profile, x)
+                writeoutfile = outfileprocess(txtfile, create_profile)
                 i = i + 1
-            #add count of total update attempts to log file
-            txtfile.write('\n' + 'Total update attempts: ' + str(i) + '\n')
-            #add count of successful updates to log file
-            elapsedTime = time.time() - starttime
-            m, s = divmod(elapsedTime, 60)
-            h, m = divmod(m, 60)
-            elapsed_time.set('%d:%02d:%02d' % (h, m, s))
             update_attempts.set(str(i))
-            counterval(writeoutfile)
-            txtfile.write('Records updated successfully: ' + updates_success.get() + '\n')
+            txtfile.write('\n' + 'Total update attempts: ' + str(i) + '\n')
+            txtfile.write('Records updated successfully: ' + str(x) + '\n')
+            timer(starttime)            
             txtfile.close()
             write = writetolog()
             printoutput.insert(INSERT, write)
@@ -257,57 +267,63 @@ def containerprofiles():
 
 #add locations to AS    
 def locations():
-    try:                                       
-        go = areyousure()
-        if go == True:
-            starttime = time.time()
-            heady = head()
-            csvin = csvopen()
-            txtfile = writefile()
+    go = areyousure()
+    #if user selects OK script will continue
+    if go == True:
+        starttime = time.time()
+        heady = head()
+        csvin = csvopen()
+        txtfile = writefile()
+        #If directory is selected script will continue
+        if txtfile != None:
             #variable to hold count of update attempts
             i = 0
-            #variable to hold count of objects successfully updated
+            #global variable to hold count of objects successfully updated; find better way?
+            global x
             x = 0
-            for row in csvin:
-                building = row[0]
-                room = row[1]
-                coordinate_1_label = row[2]
-                coordinate_1_indicator = row[3]
-                coordinate_2_label = row[4]
-                coordinate_2_indicator = row[5]
-                coordinate_3_label = row[6]
-                coordinate_3_indicator = row[7]                                       
-                new_location = {'jsonmodel_type': 'location', 'building': building,
-                                         'room': room, 'coordinate_1_label': coordinate_1_label,
-                                         'coordinate_1_indicator': coordinate_1_indicator,
-                                         'coordinate_2_label': coordinate_2_label,
-                                         'coordinate_2_indicator': coordinate_2_indicator,
-                                         'coordinate_3_label': coordinate_3_label,
-                                         'coordinate_3_indicator': coordinate_3_indicator}
-                location_data = json.dumps(new_location)
-                create_location = requests.post(api_address.get() + '/locations', headers=heady, data=location_data).json()
-                writeoutfile = outfileprocess(txtfile, create_location, x)
-                i = i + 1
-            txtfile.write('\n' + 'Total update attempts: ' + str(i) + '\n')            
-            elapsedTime = time.time() - starttime
-            m, s = divmod(elapsedTime, 60)
-            h, m = divmod(m, 60)
-            elapsed_time.set('%d:%02d:%02d' % (h, m, s))
+            try:
+                for row in csvin:
+                    if len(row) == 8:
+                        building = row[0]
+                        room = row[1]
+                        coordinate_1_label = row[2]
+                        coordinate_1_indicator = row[3]
+                        coordinate_2_label = row[4]
+                        coordinate_2_indicator = row[5]
+                        coordinate_3_label = row[6]
+                        coordinate_3_indicator = row[7]                                       
+                        new_location = {'jsonmodel_type': 'location', 'building': building,
+                                                 'room': room, 'coordinate_1_label': coordinate_1_label,
+                                                 'coordinate_1_indicator': coordinate_1_indicator,
+                                                 'coordinate_2_label': coordinate_2_label,
+                                                 'coordinate_2_indicator': coordinate_2_indicator,
+                                                 'coordinate_3_label': coordinate_3_label,
+                                                 'coordinate_3_indicator': coordinate_3_indicator}
+                        location_data = json.dumps(new_location)
+                        create_location = requests.post(api_address.get() + '/locations', headers=heady, data=location_data).json()
+                        writeoutfile = outfileprocess(txtfile, create_location)
+                        i = i + 1
+                    else:
+                        wrongcsv()
+                        return
+            except:
+                    errors()
+                    return
+            #do I need something here as well???
             update_attempts.set(str(i))
-            counterval(writeoutfile)
-            txtfile.write('Records updated successfully: ' + updates_success.get() + '\n')
+            txtfile.write('\n' + 'Total update attempts: ' + str(i) + '\n')
+            txtfile.write('Records updated successfully: ' + str(x) + '\n')
+            timer(starttime)
             txtfile.close()
             write = writetolog()
             printoutput.insert(INSERT, write)
             done = script_finished()
+        #if no directory is selected a pop-up message will appear and function will terminate
         else:
             return
-    except Exception:
-        errormessage = errors()
-#        update_attempts.set(str(i))
-#        updates_success.set(str(x))
-        write = writetolog()
-        printoutput.insert(INSERT, write)
+    #if user selects Cancel a pop-up message will appear and function will terminate
+    else:
+        return
 
 #add top containers to AS
 def topcontainers():
@@ -321,6 +337,7 @@ def topcontainers():
             #variable to hold count of update attempts
             i = 0
             #variable to hold count of objects successfully updated
+            global x
             x = 0
             for row in csvin:
                 barcode = row[0]
@@ -340,17 +357,13 @@ def topcontainers():
                                  'jsonmodel_type': 'top_container', 'repository': {'ref': '/repositories/12'}}
                 tcdata = json.dumps(create_tc)
                 tcupdate = requests.post(api_address.get() + '/repositories/12/top_containers', headers=headers.get(), data=tcdata).json()
-                writeoutfile = outfileprocess(txtfile, tcupdate, x)
+                writeoutfile = outfileprocess(txtfile, tcupdate)
                 i = i + 1
             #add count of total update attempts to log file
-            txtfile.write('\n' + 'Total update attempts: ' + str(i) + '\n')
-            elapsedTime = time.time() - starttime
-            m, s = divmod(elapsedTime, 60)
-            h, m = divmod(m, 60)
-            elapsed_time.set('%d:%02d:%02d' % (h, m, s))
             update_attempts.set(str(i))
-            counterval(writeoutfile)
-            txtfile.write('Records updated successfully: ' + updates_success.get() + '\n')
+            txtfile.write('\n' + 'Total update attempts: ' + str(i) + '\n')
+            txtfile.write('Records updated successfully: ' + str(x) + '\n')
+            timer(starttime)
             txtfile.close()
             write = writetolog()
             printoutput.insert(INSERT, write)
@@ -359,70 +372,78 @@ def topcontainers():
             return
     except Exception:
         errormessage = errors()
-#        update_attempts.set(str(i))
-#        updates_success.set(str(x))
+        update_attempts.set(str(0))
+        updates_success.set(str(0))
         write = writetolog()
         printoutput.insert(INSERT, write)
 
 #add restrictions to AS
 def restrictions():
-    try:
-        go = areyousure()
-        if go == True:
-            starttime = time.time()
-            heady = head()
-            csvin = csvopen()
-            txtfile = writefile()
-            #variables to hold count of update attempts/object successfully updated
+    go = areyousure()
+    #if user selects OK script will continue
+    if go == True:
+        starttime = time.time()
+        heady = head()
+        csvin = csvopen()
+        txtfile = writefile()
+        #If an output directory is selected script will continue
+        if txtfile != None:
+            #variable to hold count of update attempts
             i = 0
-            #variable to hold count of objects successfully updated
+            #global variable to hold count of objects successfully updated; find better way?
+            global x
             x = 0
-            for row in csvin:
-                i = i + 1
-                archival_object_URI = row[0]
-                restriction_type = row[1]
-                restriction_text = row[2]
-                begin_date = row[3]
-                end_date = row[4]
-                #gets resource to edit
-                ao_json = requests.get(api_address.get() + archival_object_URI, headers=heady).json()
-                #build JSON 
-                new_restriction = {'jsonmodel_type': 'note_multipart',
-                    'publish': True,
-                    'rights_restriction': {'begin': begin_date, 'end': end_date, 'local_access_restriction_type': [restriction_type]},
-                    'subnotes': [{'content': restriction_text,
-                                  'jsonmodel_type': 'note_text',
-                                  'publish': True}],
-                    'type': 'accessrestrict'}
-                #append restriction note to resource, form into JSON, and post to AS
-                ao_json['notes'].append(new_restriction)
-                ao_data = json.dumps(ao_json)
-                ao_update = requests.post(api_address.get() + archival_object_URI, headers=heady, data=ao_data).json()
-                if 'error' not in ao_update.keys():
-                    writeoutfile = outfileprocess(txtfile, ao_update, x)
-                else:
+            try:
+                for row in csvin:
+                    if len(row) == 5:
+                        i = i + 1
+                        archival_object_URI = row[0]
+                        restriction_type = row[1]
+                        restriction_text = row[2]
+                        begin_date = row[3]
+                        end_date = row[4]
+                        #gets resource to edit
+                        ao_json = requests.get(api_address.get() + archival_object_URI, headers=heady).json()
+                        new_restriction = {'jsonmodel_type': 'note_multipart',
+                                            'publish': True,
+                                            'rights_restriction': {'begin': begin_date, 'end': end_date, 'local_access_restriction_type': [restriction_type]},
+                                            'subnotes': [{'content': restriction_text,
+                                                  'jsonmodel_type': 'note_text',
+                                                  'publish': True}],
+                                            'type': 'accessrestrict'}
+                        #append restriction note to resource, form into JSON, and post to AS; maybe add if notes not in....
+                        if 'notes' not in ao_json.keys():
+                            #add something like 'invalid resource'...
+                            spreadsheet_error()
+                            #change so two error messages don't show up...
+                            errors()
+                            #why doesn't the [notes] error message show up anymore?? Just HTTP stuff...check this later...and fix
+                            continue
+                        else:
+                            ao_json['notes'].append(new_restriction)
+                            ao_data = json.dumps(ao_json)
+                            ao_update = requests.post(api_address.get() + archival_object_URI, headers=heady, data=ao_data).json()
+                            writeoutfile = outfileprocess(txtfile, ao_update)
+                    else:
+                        wrongcsv()
+                        return
+            except:
                     errors()
-                continue
-            txtfile.write('\n' + 'Total update attempts: ' + str(i) + '\n')            
-            elapsedTime = time.time() - starttime
-            m, s = divmod(elapsedTime, 60)
-            h, m = divmod(m, 60)
-            elapsed_time.set('%d:%02d:%02d' % (h, m, s))
+                    return
             update_attempts.set(str(i))
-            counterval(writeoutfile)
-            txtfile.write('Records updated successfully: ' + updates_success.get() + '\n')
+            txtfile.write('\n' + 'Total update attempts: ' + str(i) + '\n')
+            txtfile.write('Records updated successfully: ' + str(x) + '\n')
+            timer(starttime)
             txtfile.close()
             write = writetolog()
             printoutput.insert(INSERT, write)
             done = script_finished()
+        #if no directory is selected a pop-up message will appear and function will terminate
         else:
             return
-    except Exception:
-        errormessage = errors()
-        update_attempts.set(str(i))
-        counterval(writeoutfile)
-        write = writetolog()
-        printoutput.insert(INSERT, write)
+    #if user selects Cancel a pop-up message will appear and function will terminate
+    else:
+        return
 
 #link top containers to archival objects
 def instances():
@@ -490,7 +511,7 @@ class AutoScrollbar(Scrollbar):
 
 #keeps the scrollbar even if window is resized
 def onFrameConfigure(canvas):
-    '''Reset the scroll region to encompass the inner frame'''#
+    '''Reset the scroll region to encompass the inner frame'''
     canvas.configure(scrollregion=canvas.bbox("all"))
 
 #mainframe and canvas, employing scrollbar class (from effbot)
@@ -533,6 +554,7 @@ update_attempts = StringVar()
 updates_success = StringVar()
 elapsed_time = StringVar()
 log_file = StringVar()
+error_dialog = StringVar()
 
 #------STEP 1: LOG IN TO THE ARCHIVESSPACE API-------#
 
