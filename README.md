@@ -137,6 +137,8 @@ Add machine-actionable restrictions to ArchivesSpace
 
 #### Barcode Audit
 
+#### Using Pandas and OpenRefine for Data Analysis and Remediation
+
 ## FAQ
 
 ### How do I log into the ArchivesSpace API?
