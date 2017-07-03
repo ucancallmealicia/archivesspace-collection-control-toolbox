@@ -21,7 +21,8 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 ### Requirements
 
-* SQL Client (i.e. MySQL Workbench, HeidiSQL)
+* Standalone scripts: SQL Client (i.e. MySQL Workbench, HeidiSQL)
+* GUI: Python 3, `pymysql` module
 * ArchivesSpace 1.5+
 * Access to ArchivesSpace database
 
