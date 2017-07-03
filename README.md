@@ -62,11 +62,11 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 * Retrieves a list of access restrictions at the resource level
 
-### get_restriction_dates.sql
+#### get_restriction_dates.sql
 
 * Retrieves a list of begin and end dates for access restrictions
 
-### get_marestrictions.sql
+#### get_marestrictions.sql
 
 * Retrieves a list of machine-actionable access restrictions
 
