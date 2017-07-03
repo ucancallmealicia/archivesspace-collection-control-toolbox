@@ -6,6 +6,7 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 * SQL scripts to analyze your data and prepare update spreadsheets
 * Python scripts to make bulk updates to collection control data
 * More SQL scripts to report on your updated collection control data
+* Simple GUIs which package the above scripts together into easy-to-use interfaces
 * FAQ
 * Suggestions for further study
 
@@ -27,9 +28,15 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 ### Remediation
 
-#### Get Archival Objects
+Unsure of the state of your data? Use these queries to extract data for analysis and clean-up
 
-* Retrieve archival objects to which you would like to add container instances
+#### get_archival_objects.sql
+
+* Retrieve a list of archival objects for a given collection, with parent-child relationships indicated
+
+#### get_archival_object_instances.sql
+
+* Retrieve a list of archival object instances for a given collection
 
 #### get_container_profiles.sql
 
@@ -49,9 +56,10 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 * Retrieves a container list for a given collection
 
-#### Access Restrictions
+#### get_arch_obj_restrictions.sql
+#### get_resource_restrictions.sql
 
-* Retrieves a list of restricted materials of a given type or end date
+* Retrieves a list of access restrictions, either at the archival object or resource levels
 
 ## API Tools
 
@@ -60,9 +68,15 @@ Quickly add collection control data to ArchivesSpace using spreadsheets and the 
 ### Requirements
 
 * Python 3.4+
-* Python `requests`, `pymysql` modules
+* Python `requests`, `pymysql` modules. The `requests` module comes with Anaconda (see below); the `pymysql` module can be installed in Anaconda by opening the Anaconda shell and typing `conda install pymysql`
 * ArchivesSpace version 1.5+
 * Access to ArchivesSpace API
+
+### Recommendations
+
+* Anaconda: https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation
+* OpenRefine: http://openrefine.org/. OpenRefine is a free, open source data cleaning tool 
+* Python `pandas` module. The `pandas` module comes with Anaconda.
 
 ### Container Profiles
 Add container profiles to ArchivesSpace
@@ -113,21 +127,13 @@ Add locations data to ArchivesSpace
 ### Restrictions
 Add machine-actionable restrictions to ArchivesSpace
 
-#### resource_level_restrictions_template.csv
+#### restrictions_template.csv
 
-* Use this spreadsheet to enter your resource-level restriction data
+* Use this spreadsheet to enter your restriction data, at either the resource or archival object levels
 
-#### create_resource_restrictions.py
+#### create_restrictions.py
 
-* This script takes the data from your completed resource_level_restrictions_template spreadsheet and posts to ArchivesSpace
-
-#### archival_object_level_restrictions_template.csv
-
-* Use this spreadsheet to enter your archival object-level restriction data
-
-#### create_archival_object_restrictions.py
-
-* This script takes the data from your completed archival_object_level_restrictions_template spreadsheet and posts to ArchivesSpace
+* This script takes the data from your completed restrictions_template spreadsheet and posts to ArchivesSpace
 
 ### Reporting with Python and SQL
 
