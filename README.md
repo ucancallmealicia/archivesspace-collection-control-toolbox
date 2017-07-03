@@ -55,9 +55,20 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 ### Restrictions
 
 #### get_arch_obj_restrictions.sql
+
+* Retrieves a list of access restrictions at the archival object level
+
 #### get_resource_restrictions.sql
 
-* Retrieves a list of access restrictions, either at the archival object or resource levels
+* Retrieves a list of access restrictions at the resource level
+
+### get_restriction_dates.sql
+
+* Retrieves a list of begin and end dates for access restrictions
+
+### get_marestrictions.sql
+
+* Retrieves a list of machine-actionable access restrictions
 
 ## API Tools
 
