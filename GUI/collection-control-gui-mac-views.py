@@ -57,14 +57,14 @@ def prewritefile():
     return directory
 
 #create output file
-def writefile():
+def writefile(name):
     directoryname = txt_name.get()
     if txt_name.get() == '':
         nodirectory()
         return
     else:
-        f = open(directoryname + '/output.txt', 'a')
-        txtfile = directoryname + '/output.txt'
+        f = open(directoryname + '/' + name + '_output.txt', 'a', encoding='utf-8')
+        txtfile = directoryname + '/' + name + '_output.txt'
         txt_file.set(str(txtfile))
         return f
 
@@ -280,7 +280,7 @@ def containerprofiles():
         if heady != None:
             csvin = csvopen()
             if csvopen != None:
-                txtfile = writefile()
+                txtfile = writefile('container_profiles')
                 #If directory is selected script will continue
                 if txtfile != None:
                     #variable to hold count of update attempts
@@ -345,7 +345,7 @@ def locations():
         if heady != None:
             csvin = csvopen()
             if csvopen != None:
-                txtfile = writefile()
+                txtfile = writefile('locations')
                 #If directory is selected script will continue
                 if txtfile != None:
                     #variable to hold count of update attempts
@@ -413,7 +413,7 @@ def topcontainers():
         if heady != None:
             csvin = csvopen()
             if csvopen != None:
-                txtfile = writefile()
+                txtfile = writefile('top_containers')
                 #If directory is selected script will continue
                 if txtfile != None:
                     #variable to hold count of update attempts
@@ -485,7 +485,7 @@ def restrictions():
         if heady != None:
             csvin = csvopen()
             if csvopen != None:
-                txtfile = writefile()
+                txtfile = writefile('restrictions')
                 #If directory is selected script will continue
                 if txtfile != None:
                     #variable to hold count of update attempts
@@ -562,7 +562,7 @@ def instances():
         if heady != None:
             csvin = csvopen()
             if csvopen != None:
-                txtfile = writefile()
+                txtfile = writefile('instances')
                 #If directory is selected script will continue
                 if txtfile != None:
                     #variable to hold count of update attempts
