@@ -3,10 +3,9 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 ## What's in this Toolbox
 
-* SQL scripts to analyze your data and prepare update spreadsheets
-* Python scripts to make bulk updates to collection control data
-* More SQL scripts to report on your updated collection control data
-* Simple GUIs which package the above scripts together into easy-to-use interfaces
+* Standalone SQL scripts to analyze your collection control data before update, prepare update spreadsheets, and report on data after update
+* Standalone Python scripts to make bulk updates to collection control data
+* Simple GUIs which package the standalone scripts into easy-to-use interfaces
 * FAQ
 * Suggestions for further study
 
@@ -26,9 +25,19 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 * ArchivesSpace 1.5+
 * Access to ArchivesSpace database
 
-### Remediation
+### Container Profiles
 
-Unsure of the state of your data? Use these queries to extract data for analysis and clean-up
+#### get_container_profiles.sql
+
+* Gets a list of container profiles with titles and URIs
+
+### Locations
+
+#### get_locations.sql
+
+* Gets a list of locations with titles and URIs
+
+### Archival Objects, Top Containers, and Top Container Instances
 
 #### get_archival_objects.sql
 
@@ -38,17 +47,11 @@ Unsure of the state of your data? Use these queries to extract data for analysis
 
 * Retrieve a list of archival object instances (a container list, essentially) for a given collection
 
-#### get_container_profiles.sql
-
-* Gets a list of container profiles with titles and URIs
-
-#### get_locations.sql
-
-* Gets a list of locations with titles and URIs
-
 #### get_top_containers.sql
 
 * Gets a list of existing top containers, with location and container profile data
+
+### Restrictions
 
 #### get_arch_obj_restrictions.sql
 #### get_resource_restrictions.sql
