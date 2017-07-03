@@ -36,7 +36,7 @@ Unsure of the state of your data? Use these queries to extract data for analysis
 
 #### get_archival_object_instances.sql
 
-* Retrieve a list of archival object instances for a given collection
+* Retrieve a list of archival object instances (a container list, essentially) for a given collection
 
 #### get_container_profiles.sql
 
@@ -49,12 +49,6 @@ Unsure of the state of your data? Use these queries to extract data for analysis
 #### get_top_containers.sql
 
 * Gets a list of existing top containers, with location and container profile data
-
-### Reporting
-
-#### Container Lists
-
-* Retrieves a container list for a given collection
 
 #### get_arch_obj_restrictions.sql
 #### get_resource_restrictions.sql
