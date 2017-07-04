@@ -42,7 +42,7 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
     * HeidiSQL - https://www.heidisql.com/download.php 
 * GUI: Python 3.4+, `pymysql` module
   * Software Recommendation: 
-    * Anaconda - https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation. The `requests` and `pandas` modules are included in the installation, and `pymysql` is one of hundreds of modules which can be installed simply by typing `conda install <module_name>` into the Anaconda shell. See https://docs.continuum.io/anaconda/ for full documentation and installation instructions.
+    * Anaconda - https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation. The `requests`, `pandas`, 'lxml' and `pymysql` modules are among hundreds of Python add-ons which can easily be installed via the Anaconda Navigator interface. See https://docs.continuum.io/anaconda/ for full documentation and installation instructions.
 * ...Reporting Scripts:...
   * ...Python 3.4+, `pandas` module...docs: http://pandas.pydata.org
 
@@ -120,7 +120,7 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 * LibreOffice: https://www.libreoffice.org - free and open source; works particularly well for CSVs; Excel tends to mess with barcodes, so avoid if possible, especially when making changes to containers
 * Python 3.4+: https://www.python.org/downloads/
   * Software Recommendation: 
-    * Anaconda - https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation. The `requests` and `pandas` modules are included in the installation, and `pymysql` is one of hundreds of modules which can be installed simply by typing `conda install <module_name>` into the Anaconda shell. See https://docs.continuum.io/anaconda/ for full documentation and installation instructions.
+    * Anaconda - https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation. The `requests`, `pandas`, 'lxml' and `pymysql` modules are among hundreds of Python add-ons which can easily be installed via the Anaconda Navigator interface. See https://docs.continuum.io/anaconda/ for full documentation and installation instructions.
 * Python `pandas` module (included with Anaconda installation; see further reading section for instructions on how to install third-party modules in your main Python installation)
 
 ### OpenRefine tips and tricks
@@ -145,7 +145,7 @@ Quickly add collection control data to ArchivesSpace using spreadsheets and the 
 * Access to ArchivesSpace API
 * Python 3.4+: https://www.python.org/downloads/
   * Software Recommendation: 
-    * Anaconda - https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation. The `requests` and `pandas` modules are included in the installation, and `pymysql` is one of hundreds of modules which can be installed simply by typing `conda install <module_name>` into the Anaconda shell. See https://docs.continuum.io/anaconda/ for full documentation and installation instructions.
+    * Anaconda - https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation. The `requests`, `pandas`, 'lxml' and `pymysql` modules are among hundreds of Python add-ons which can easily be installed via the Anaconda Navigator interface. See https://docs.continuum.io/anaconda/ for full documentation and installation instructions.
 * Python `requests` module (included with Anaconda installation; see further reading section for instructions on how to install third-party modules in your main Python installation)
 * LibreOffice: https://www.libreoffice.org - free and open source; works particularly well for CSVs; Excel tends to mess with barcodes, so avoid if possible, especially when making changes to containers
 
