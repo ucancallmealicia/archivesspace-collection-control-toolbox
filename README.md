@@ -233,6 +233,8 @@ Add machine-actionable restrictions to ArchivesSpace
 
 ## Screencasts
 
+[![Downloading Github Repository](https://img.youtube.com/vi/u-U6lMWdK9M/0.jpg)](https://www.youtube.com/watch?v=u-U6lMWdK9M "ArchivesSpace Collection Control Screencasts: Download Github Repo")
+
 ## Software Downloads/Further Reading
 
 * Python 3: 
