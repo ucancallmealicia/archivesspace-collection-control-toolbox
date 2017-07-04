@@ -3,54 +3,78 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 ## What's in this Toolbox
 
-* Standalone SQL scripts to analyze your collection control data before update, prepare update spreadsheets, and report on data after update
+* Standalone SQL scripts to: 
+  * analyze collection control data before update
+  * prepare update spreadsheets
+  * report on data after update
+* ...Coming Soon: Standalone Python scripts to analyze EAD...
+* ...In Progress: Data cleaning tools...
+* Spreadsheet templates in which to enter collection control data
 * Standalone Python scripts to make bulk updates to collection control data
-* Simple GUIs which package the standalone scripts into easy-to-use interfaces
-* FAQ
+* Simple GUIs which package standalone scripts into easy-to-use interfaces
+* ....FAQ - Logistics, APIs, SQL, etc....
+* ...Screencast tutorials...
 * Suggestions for further study
 
 ## General Tips:
 
-* Test scripts thoroughly before running in production
-* Use SQL to analyze and report on data, use the API to update data
+* Test all scripts thoroughly before running in production
+  * ...How to install a TEST instance of AS if you don't already have one...
+* Use SQL queries to analyze and report on ArchivesSpace collection control data; don't make updates/changes to your data via the database/SQL unless you absolutely have to
+* Instead, use/modify the included Python scripts to add and update collection control data quickly and in bulk via the ArchivesSpace API
+* ...
 
-## Database Tools
+## ArchivesSpace Database Tools
 
 * Analyze your data to identify remediation needs
-* Run reports on your holdings once collection control data is in ArchivesSpace
+* Generate data for cleaning via OpenRefine or other tools
+* Use data (URIs, etc.) returned from queries to make updates via the ArchivesSpace API
+* Run reports on your holdings once collection control data has been added to ArchivesSpace
+* Most scripts can be used to both identify issues with/lack of current collection control data in ArchivesSpace and to create reports once these issues have been addressed
 
-### Requirements
-
-* Standalone scripts: SQL Client (i.e. MySQL Workbench, HeidiSQL)
-* GUI: Python 3, `pymysql` module
-* ArchivesSpace 1.5+
-* Access to ArchivesSpace database
+### Requirements:
+* ArchivesSpace 1.5+ (NOT TESTED ON AS 2.0+)
+* Access to ArchivesSpace database, login credentials (host name, database name, port, username, password)
+* LibreOffice: https://www.libreoffice.org - free and open source; works particularly well for CSVs; Excel tends to mess with barcodes, so avoid if possible, especially when making changes to containers
+* Standalone scripts: SQL Client
+  * Software Recommendations:
+    * MySQL Workbench - https://dev.mysql.com/downloads/workbench/
+    * HeidiSQL - https://www.heidisql.com/download.php 
+* GUI: Python 3.4+, `pymysql` module
+  * Software Recommendation: 
+    * Anaconda - https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation. The `requests` and `pandas` modules are included in the installation, and `pymysql` is one of hundreds of modules which can be installed simply by typing `conda install <module_name>` into the Anaconda shell. See https://docs.continuum.io/anaconda/ for full documentation and installation instructions.
+* ...Reporting Scripts:...
+  * ...Python 3.4+, `pandas` module...docs: http://pandas.pydata.org
 
 ### Container Profiles
 
 #### get_container_profiles.sql
 
 * Gets a list of container profiles with titles and URIs
+* Container profile URIs can be used to add or update top containers via the AS API
 
 ### Locations
 
 #### get_locations.sql
 
 * Gets a list of locations with titles and URIs
+* Location URIs can be used to add or update top containers via the AS API
 
 ### Archival Objects, Top Containers, and Top Container Instances
 
 #### get_archival_objects.sql
 
 * Retrieve a list of archival objects for a given collection, with parent-child relationships indicated
-
-#### get_archival_object_instances.sql
-
-* Retrieve a list of archival object instances (a container list, essentially) for a given collection
+* Archival Object URIs can be used when attaching top container instances (see get_top_containers.sql) to archival objects via the AS API
 
 #### get_top_containers.sql
 
 * Gets a list of existing top containers, with location and container profile data
+* Top container URIs can be used in conjunction with Archival Object URIs (see get_archival_objects.sql) to create top container instances via the AS API
+
+#### get_archival_object_instances.sql
+
+* Retrieve a list of archival object instances (a container list, essentially) for a given collection
 
 ### Restrictions
 
@@ -70,22 +94,60 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 * Retrieves a list of machine-actionable access restrictions
 
-## API Tools
+### `pymysql` Reporting Scripts
+
+#### get_restriction_end_date.py
+
+* Get all restrictions that end on a user-defined date
+
+#### barcode_audit.py
+
+* ...Using a list of barcodes as input, retrieve information about attached archival objects...
+
+### `pandas` Reporting Scripts
+
+### ArchivesSpace Database GUI
+
+* Packages all of the above scripts into an easy-to use GUI. Must have login credentials to run queries. Must also know your repository's assigned number in the ArchivesSpace database, and, for some scripts, the EAD ID of the collection you want to analyze (note: EAD ID could be changed to identifier)
+* To run GUI from Anaconda, open Anaconda Navigator, click on Environments tab, select <include both Mac and PC scenarios>...etc.
+
+## Data Cleaning Tools
+
+...Clean up messy data retrieved from queries - upload this data to ArchivesSpace via API...
+
+### Requirements
+* OpenRefine: http://openrefine.org/ - free and open source data cleaning tool...
+* LibreOffice: https://www.libreoffice.org - free and open source; works particularly well for CSVs; Excel tends to mess with barcodes, so avoid if possible, especially when making changes to containers
+* Python 3.4+: https://www.python.org/downloads/
+  * Software Recommendation: 
+    * Anaconda - https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation. The `requests` and `pandas` modules are included in the installation, and `pymysql` is one of hundreds of modules which can be installed simply by typing `conda install <module_name>` into the Anaconda shell. See https://docs.continuum.io/anaconda/ for full documentation and installation instructions.
+* Python `pandas` module (included with Anaconda installation; see further reading section for instructions on how to install third-party modules in your main Python installation)
+
+### OpenRefine tips and tricks
+
+#### Common regular expression patterns for identifying and remediating archival data
+
+### Spreadsheet software tips and tricks
+
+#### Combining spreadsheet data using VLookup
+
+#### ...Other Useful Spreadsheet Formulas...
+
+### `pandas` Remediation Scripts
+
+## ArchivesSpace API Tools
 
 Quickly add collection control data to ArchivesSpace using spreadsheets and the ArchivesSpace API
 
 ### Requirements
 
-* Python 3.4+
-* Python `requests`, `pymysql` modules. The `requests` module comes with Anaconda (see below); the `pymysql` module can be installed in Anaconda by opening the Anaconda shell and typing `conda install pymysql`
-* ArchivesSpace version 1.5+
+* ArchivesSpace version 1.5+ (NOT TESTED ON AS 2.0+)
 * Access to ArchivesSpace API
-
-### Recommendations
-
-* Anaconda: https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation
-* OpenRefine: http://openrefine.org/. OpenRefine is a free, open source data cleaning tool 
-* Python `pandas` module. The `pandas` module comes with Anaconda.
+* Python 3.4+: https://www.python.org/downloads/
+  * Software Recommendation: 
+    * Anaconda - https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation. The `requests` and `pandas` modules are included in the installation, and `pymysql` is one of hundreds of modules which can be installed simply by typing `conda install <module_name>` into the Anaconda shell. See https://docs.continuum.io/anaconda/ for full documentation and installation instructions.
+* Python `requests` module (included with Anaconda installation; see further reading section for instructions on how to install third-party modules in your main Python installation)
+* LibreOffice: https://www.libreoffice.org - free and open source; works particularly well for CSVs; Excel tends to mess with barcodes, so avoid if possible, especially when making changes to containers
 
 ### Container Profiles
 Add container profiles to ArchivesSpace
@@ -93,6 +155,7 @@ Add container profiles to ArchivesSpace
 #### container_profile_template.csv
 
 * Use this spreadsheet to enter your container profile data
+* Fields:
 
 #### create_container_profiles.py
 
@@ -104,10 +167,20 @@ Add locations data to ArchivesSpace
 #### locations_template.csv
 
 * Use this spreadsheet to enter your location data
+* Fields:
 
 #### create_locations.py
 
 * This script takes the data from your completed locations_template spreadsheet and posts to ArchivesSpace
+
+#### location_profiles_template.csv
+
+* Use this spreadsheet to enter your location profile data
+* Fields:
+
+#### create_location_profiles.py
+
+* This script takes the data from your completed location_profiles_template spreadsheet and posts to ArchivesSpace
 
 ### Top Containers
 
@@ -116,6 +189,7 @@ Add locations data to ArchivesSpace
 ##### top_container_template.csv
 
 * Use this spreadsheet to enter your top container data
+* Fields:
 
 ##### create_top_containers.py
 
@@ -126,6 +200,7 @@ Add locations data to ArchivesSpace
 ##### tc_instance_template.csv
 
 * Use this spreadsheet to enter your top container instance data
+* Fields:
 
 ##### create_container_instance.py
 
@@ -134,23 +209,21 @@ Add locations data to ArchivesSpace
 #### Update Top Containers
 
 ### Restrictions
+
 Add machine-actionable restrictions to ArchivesSpace
 
 #### restrictions_template.csv
 
 * Use this spreadsheet to enter your restriction data, at either the resource or archival object levels
+* Fields
 
 #### create_restrictions.py
 
 * This script takes the data from your completed restrictions_template spreadsheet and posts to ArchivesSpace
 
-### Reporting with Python and SQL
-
-#### Barcode Audit
-
-#### Using Pandas and OpenRefine for Data Analysis and Remediation
-
 ## FAQ
+
+### How do I get access to my ArchivesSpace Database and/or API?
 
 ### How do I log into the ArchivesSpace API?
 
@@ -158,14 +231,15 @@ Add machine-actionable restrictions to ArchivesSpace
 
 ### I'm logged in. I have access. Now what?
 
-## Software Downloads/Tutorials/Further Reading
+## Screencasts
 
-* Python 3: https://www.python.org/downloads/
-* HeidiSQL: https://www.heidisql.com/download.php
-* MySQL Workbench: https://dev.mysql.com/downloads/workbench/
+## Software Downloads/Further Reading
+
+* Python 3: 
 * Installing third-party Python modules: https://python4astronomers.github.io/installation/packages.html
                                          https://docs.python.org/3/installing/
 * ArchivesSpace API reference: http://archivesspace.github.io/archivesspace/api/ 
 * Python 3 Syntax: https://docs.python.org/3/tutorial/
 * SQL Syntax: https://dev.mysql.com/doc/refman/5.7/en/tutorial.html
+* Great archives-specific intro to Python - https://practicaltechnologyforarchives.org/issue7_wiedeman/
 
