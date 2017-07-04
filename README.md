@@ -233,7 +233,12 @@ Add machine-actionable restrictions to ArchivesSpace
 
 ## Screencasts
 
+### Download Collection Control Files from Github Repository
 [![Downloading Github Repository](https://img.youtube.com/vi/u-U6lMWdK9M/0.jpg)](https://www.youtube.com/watch?v=u-U6lMWdK9M "ArchivesSpace Collection Control Screencasts: Download Github Repo")
+
+### Set Up Python Environment in Anaconda
+[![Setting Up Your Environment](https://img.youtube.com/vi/2_QsJv6XR2Y/0.jpg)](https://www.youtube.com/watch?v=2_QsJv6XR2Y 
+"ArchivesSpace Collection Control Screencasts: Set Up Your Environment")
 
 ## Software Downloads/Further Reading
 
