@@ -100,6 +100,10 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 * Get all restrictions that end on a user-defined date
 
+### get_access_notes.py
+
+* Using a list of EAD IDs as input, retrieve access notes about a group of resources
+
 #### barcode_audit.py
 
 * ...Using a list of barcodes as input, retrieve information about attached archival objects...
