@@ -7,22 +7,21 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
   * analyze collection control data before update
   * prepare update spreadsheets
   * report on data after update
-* ...Coming Soon: Standalone Python scripts to analyze EAD...
-* ...In Progress: Data cleaning tools...
+* Standalone Python scripts to analyze EAD (Coming Soon)
+* Data cleaning tools (In Progress)
 * Spreadsheet templates in which to enter collection control data
 * Standalone Python scripts to make bulk updates to collection control data
 * Simple GUIs which package standalone scripts into easy-to-use interfaces
-* ....FAQ - Logistics, APIs, SQL, etc....
-* ...Screencast tutorials...
+* FAQ - Logistics, APIs, SQL, etc. (In Progress)
+* Screencast tutorials (In Progress)
 * Suggestions for further study
 
 ## General Tips:
 
 * Test all scripts thoroughly before running in production
   * ...How to install a TEST instance of AS if you don't already have one...
-* Use SQL queries to analyze and report on ArchivesSpace collection control data; don't make updates/changes to your data via the database/SQL unless you absolutely have to
-* Instead, use/modify the included Python scripts to add and update collection control data quickly and in bulk via the ArchivesSpace API
-* ...
+* Use SQL queries to analyze and report on ArchivesSpace collection control data; don't make changes to the database via SQL unless you know what you're doing
+* Instead, use or modify the included Python scripts to update collection control data quickly and in bulk via the ArchivesSpace API
 
 ## ArchivesSpace Database Tools
 
@@ -129,6 +128,9 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 ### OpenRefine tips and tricks
 
+* Possible Uses:
+ * Break out locations data (ranges, shelf numbers, etc.) that was combined into a single field during ASpace import
+
 #### Common regular expression patterns for identifying and remediating archival data
 
 ### Spreadsheet software tips and tricks
@@ -159,7 +161,6 @@ Add container profiles to ArchivesSpace
 #### container_profile_template.csv
 
 * Use this spreadsheet to enter your container profile data
-* Fields:
 
 #### create_container_profiles.py
 
@@ -171,7 +172,6 @@ Add locations data to ArchivesSpace
 #### locations_template.csv
 
 * Use this spreadsheet to enter your location data
-* Fields:
 
 #### create_locations.py
 
@@ -180,7 +180,6 @@ Add locations data to ArchivesSpace
 #### location_profiles_template.csv
 
 * Use this spreadsheet to enter your location profile data
-* Fields:
 
 #### create_location_profiles.py
 
@@ -193,7 +192,6 @@ Add locations data to ArchivesSpace
 ##### top_container_template.csv
 
 * Use this spreadsheet to enter your top container data
-* Fields:
 
 ##### create_top_containers.py
 
@@ -204,7 +202,6 @@ Add locations data to ArchivesSpace
 ##### tc_instance_template.csv
 
 * Use this spreadsheet to enter your top container instance data
-* Fields:
 
 ##### create_container_instance.py
 
@@ -219,7 +216,6 @@ Add machine-actionable restrictions to ArchivesSpace
 #### restrictions_template.csv
 
 * Use this spreadsheet to enter your restriction data, at either the resource or archival object levels
-* Fields
 
 #### create_restrictions.py
 
