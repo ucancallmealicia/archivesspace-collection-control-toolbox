@@ -9,9 +9,9 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
   * report on data after update
 * Standalone Python scripts to analyze EAD (Coming Soon)
 * Data cleaning tools (In Progress)
-* Spreadsheet templates in which to enter collection control data
 * Standalone Python scripts to make bulk updates to collection control data
 * Simple GUIs which package standalone scripts into easy-to-use interfaces
+* Spreadsheet templates to record collection control data for upload
 * FAQ - Logistics, APIs, SQL, etc. (In Progress)
 * Screencast tutorials (In Progress)
 * Suggestions for further study
@@ -26,10 +26,10 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 ## ArchivesSpace Database Tools
 
 * Analyze your data to identify remediation needs
-* Generate data for cleaning via OpenRefine or other tools
-* Use data (URIs, etc.) returned from queries to make updates via the ArchivesSpace API
-* Run reports on your holdings once collection control data has been added to ArchivesSpace
-* Most scripts can be used to both identify issues with/lack of current collection control data in ArchivesSpace and to create reports once these issues have been addressed
+* Generate data for cleaning with OpenRefine or other tools
+* Use data returned from queries to make updates via the ArchivesSpace API
+* Run reports on holdings once collection control data is added to ArchivesSpace
+* Identify issues with current collection control data in ArchivesSpace and create reports once these issues have been addressed
 
 ### Requirements:
 * ArchivesSpace 1.5+ (NOT TESTED ON AS 2.0+)
@@ -42,8 +42,8 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 * GUI: Python 3.4+, `pymysql` module
   * Software Recommendation: 
     * Anaconda - https://www.continuum.io/downloads. Anaconda is a free, open source Python distribution which comes with a number of useful modules for data analysis and manipulation. The `requests`, `pandas`, 'lxml' and `pymysql` modules are among hundreds of Python add-ons which can easily be installed via the Anaconda Navigator interface. See https://docs.continuum.io/anaconda/ for full documentation and installation instructions.
-* ...Reporting Scripts:...
-  * ...Python 3.4+, `pandas` module...docs: http://pandas.pydata.org
+* Reporting Scripts:
+  * Python 3.4+, `pandas` module (http://pandas.pydata.org)
 
 ### Container Profiles
 
