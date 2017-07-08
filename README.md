@@ -240,6 +240,10 @@ Add machine-actionable restrictions to ArchivesSpace
 [![Setting Up Your Environment](https://img.youtube.com/vi/2_QsJv6XR2Y/0.jpg)](https://www.youtube.com/watch?v=2_QsJv6XR2Y 
 "ArchivesSpace Collection Control Screencasts: Set Up Your Environment")
 
+### Running Collection Control Scripts from Anaconda Terminal/Command Prompt
+[![Running Scripts in Anaconda](https://img.youtube.com/vi/SunLjKqWNsE/0.jpg)](https://www.youtube.com/watch?v=SunLjKqWNsE 
+"ArchivesSpace Collection Control Screencasts: Running Scripts in Anaconda")
+
 ## Software Downloads/Further Reading
 
 * Python 3: 
