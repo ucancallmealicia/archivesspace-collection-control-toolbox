@@ -241,19 +241,22 @@ def get_locations():
             areyousure()
             output = writefile('locations')
             cursor.execute("""
-            SELECT title
-                , building
-                , floor
-                , room
-                , area
-                , coordinate_1_label
-                , coordinate_1_indicator
-                , coordinate_2_label
-                , coordinate_2_indicator
-                , coordinate_3_label
-                , coordinate_3_indicator
-                , CONCAT('/locations/', id) as location_URI
-            FROM location""")         
+	    SELECT l.title
+		, l.building
+    		, l.floor
+    		, l.room
+    		, l.area
+		, l.coordinate_1_label
+    		, l.coordinate_1_indicator
+		, l.coordinate_2_label
+    		, l.coordinate_2_indicator
+    		, l.coordinate_3_label
+    		, l.coordinate_3_indicator
+    		, CONCAT('/locations/', l.id) as location_URI
+   		, CONCAT('/location_profiles', lp.id) as location_profile_URI
+	    FROM location l
+	    LEFT JOIN location_profile_rlshp lpr on lpr.location_id = l.id
+	    LEFT JOIN location_profile lp on lp.id = lpr.location_profile_id""")         
             columns = cursor.description
             results = cursor.fetchall()
             out(results, output)
@@ -427,7 +430,34 @@ def get_archival_objects():
             cursor.close()
             script_finished()
     except Exception:
-        errors()    
+        errors()
+
+def get_location_profiles():
+    try:
+        connect = sql_login()
+        if connect == None:
+            login_error()
+            return
+        else:
+            cursor = connect.cursor()
+            areyousure()
+            output = writefile('location_profiles')
+            cursor.execute("""
+	    SELECT lp.name
+		, lp.depth
+	        , lp.width
+	        , lp.height
+		, ev.value AS dimension_units
+		, CONCAT('/location_profiles/', lp.id) AS location_profile_URI
+	    FROM location_profile lp
+	    LEFT JOIN enumeration_value ev on ev.id = lp.dimension_units_id""")         
+            columns = cursor.description
+            results = cursor.fetchall()
+            out(results, output)
+            cursor.close()
+            script_finished()
+    except Exception:
+        errors()
     
 #----------------------------------------------------------------GUI SETUP--------------------------------------------------------
 
@@ -575,7 +605,7 @@ getcps = ttk.Button(mainframe, text='Get container profiles', width=40, command=
 getresourcerestricts = ttk.Button(mainframe, text='Get resource-level restrictions', width=40, command=get_resource_restrictions).grid(column=2, row=24, sticky=W)
 getaorestricts = ttk.Button(mainframe, text='Get archival object-level restrictions', width=40, command=get_ao_restrictions).grid(column=3, row=24, sticky=W)
 getaos = ttk.Button(mainframe, text='Get container list', width=40, command=get_archobj_instances).grid(column=2, row=25, sticky=W)
-
+getlps = ttk.Button(mainframe, text='Get location profiles', width=40, command=get_location_profiles).grid(column-3, row=25, sticky=W)
 #-------STEP 5: REVIEW OUTPUT------#
 
 #REVIEW OUTPUT HEADER
