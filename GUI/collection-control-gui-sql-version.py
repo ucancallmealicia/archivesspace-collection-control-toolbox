@@ -459,7 +459,81 @@ def get_location_profiles():
             script_finished()
     except Exception:
         errors()
-    
+
+def barcode_audit():
+    try:
+        connect = sql_login()
+        if connect == None:
+            login_error()
+            return
+        else:
+            cursor = connect.cursor()
+            areyousure()
+            output = writefile('barcode_audit')
+	    #add input file stuff here
+            for barcode in barcodelisty:
+		cursor.execute("""
+        	SELECT resource.ead_id AS EAD_ID
+            	    , resource.title AS Collection
+            	    , ao.display_string AS Archival_Object
+            	    , cp.name AS Container_Type
+            	    , tc.indicator AS Container_Number
+              	    , tc.barcode AS Barcode
+        	FROM sub_container sc
+        	left join enumeration_value on enumeration_value.id = sc.type_2_id
+        	left join top_container_link_rlshp tclr on tclr.sub_container_id = sc.id
+        	left join top_container tc on tclr.top_container_id = tc.id
+        	left join top_container_profile_rlshp tcpr on tcpr.top_container_id = tc.id
+        	left join container_profile cp on cp.id = tcpr.container_profile_id
+        	join instance on sc.instance_id = instance.id
+        	join archival_object ao on instance.archival_object_id = ao.id
+        	join resource on ao.root_record_id = resource.id
+        	WHERE tc.barcode LIKE """ + str(barcode))
+              	columns = cursor.description
+            	results = cursor.fetchall()
+            	out(results, output)
+            	cursor.close()
+            script_finished()
+    except Exception:
+        errors() 
+		
+def get_access_notes():
+    try:
+        connect = sql_login()
+        if connect == None:
+            login_error()
+            return
+        else:
+            cursor = connect.cursor()
+            areyousure()
+            output = writefile('access_restrictions')
+	    #add input here...
+	    for ead in eadlisty:
+	    	cursor.execute("""
+		SELECT DISTINCT resource.ead_id AS EAD_ID
+		    , resource.identifier AS Identifier
+	            , resource.title AS Resource_Title
+	            , ev.value AS LEVEL
+        	    , rr.restriction_note_type AS Restriction_Type
+        	    , rr.begin AS BEGIN_DATE
+        	    , rr.end AS END_DATE
+        	    , CAST(note.notes as CHAR (10000) CHARACTER SET UTF8) AS restriction_text
+        	    , CONCAT('/repositories/', resource.repo_id, '/resources/', resource.id) AS Resource_URL
+    		FROM rights_restriction rr
+    		LEFT JOIN resource on resource.id = rr.resource_id
+   		LEFT JOIN enumeration_value ev on ev.id = resource.level_id
+    		LEFT JOIN note on resource.id = note.resource_id
+    		WHERE resource.repo_id = 12 #enter your repo_id here
+    		AND rr.restriction_note_type LIKE '%accessrestrict%'
+    		AND note.notes LIKE '%accessrestrict%'
+    		AND resource.ead_id LIKE '%""" + ead + """%'""")	
+              	columns = cursor.description
+            	results = cursor.fetchall()
+            	out(results, output)
+            	cursor.close()
+            script_finished()
+    except Exception:
+        errors() 
 #----------------------------------------------------------------GUI SETUP--------------------------------------------------------
 
 #---------------------------------------MAINFRAME, CANVAS, SCROLLBAR, INPUT MENUS-------------------------------------------#
@@ -607,6 +681,9 @@ getresourcerestricts = ttk.Button(mainframe, text='Get resource-level restrictio
 getaorestricts = ttk.Button(mainframe, text='Get archival object-level restrictions', width=40, command=get_ao_restrictions).grid(column=3, row=24, sticky=W)
 getaos = ttk.Button(mainframe, text='Get container list', width=40, command=get_archobj_instances).grid(column=2, row=25, sticky=W)
 getlps = ttk.Button(mainframe, text='Get location profiles', width=40, command=get_location_profiles).grid(column=3, row=25, sticky=W)
+barcodeaudit = ttk.Button(mainframe, text='Run barcode audit', width=40, command=barcode_audit).grid(column=2, row=26, sticky=W)
+getaccess = ttk.Button(mainframe, text='Get access notes', width=40, command=get_access_notes).grid(column=3, row=26, sticky=W)
+
 #-------STEP 5: REVIEW OUTPUT------#
 
 #REVIEW OUTPUT HEADER
