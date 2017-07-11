@@ -99,13 +99,13 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 * Get all restrictions that end on a user-defined date
 
-### get_access_notes.py
+#### get_access_notes.py
 
 * Using a list of EAD IDs as input, retrieve access notes about a group of resources
 
 #### barcode_audit.py
 
-* ...Using a list of barcodes as input, retrieve information about attached archival objects...
+* Using a list of barcodes as input, retrieve information about attached archival objects
 
 ### `pandas` Reporting Scripts
 
@@ -116,7 +116,7 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 
 ## Data Cleaning Tools
 
-...Clean up messy data retrieved from queries - upload this data to ArchivesSpace via API...
+Clean up messy data retrieved from queries - upload this data to ArchivesSpace via API...
 
 ### Requirements
 * OpenRefine: http://openrefine.org/ - free and open source data cleaning tool...
