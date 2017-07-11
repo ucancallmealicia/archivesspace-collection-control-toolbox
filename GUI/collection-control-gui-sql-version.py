@@ -605,7 +605,7 @@ getcps = ttk.Button(mainframe, text='Get container profiles', width=40, command=
 getresourcerestricts = ttk.Button(mainframe, text='Get resource-level restrictions', width=40, command=get_resource_restrictions).grid(column=2, row=24, sticky=W)
 getaorestricts = ttk.Button(mainframe, text='Get archival object-level restrictions', width=40, command=get_ao_restrictions).grid(column=3, row=24, sticky=W)
 getaos = ttk.Button(mainframe, text='Get container list', width=40, command=get_archobj_instances).grid(column=2, row=25, sticky=W)
-getlps = ttk.Button(mainframe, text='Get location profiles', width=40, command=get_location_profiles).grid(column-3, row=25, sticky=W)
+getlps = ttk.Button(mainframe, text='Get location profiles', width=40, command=get_location_profiles).grid(column=3, row=25, sticky=W)
 #-------STEP 5: REVIEW OUTPUT------#
 
 #REVIEW OUTPUT HEADER
