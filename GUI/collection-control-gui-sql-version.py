@@ -5,6 +5,7 @@
 
 #to-do -
 #column headers, error handling, etc.
+#add input window for text files - will use for get_access_notes and barcode_audit scripts
 
 #--------------------------------------------------------------MODULES---------------------------------------------------------------
 
