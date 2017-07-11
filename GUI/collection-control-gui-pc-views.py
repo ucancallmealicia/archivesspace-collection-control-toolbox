@@ -334,7 +334,69 @@ def containerprofiles():
     else:
         return
 
-#add error messages....
+
+#add location profiles to AS
+def locationprofiles():
+    go = areyousure()
+    #if user selects OK script will continue
+    if go == True:
+        starttime = time.time()
+        heady = head()
+        if heady != None:
+            csvin = csvopen()
+            if csvopen != None:
+                txtfile = writefile('locations')
+                #If directory is selected script will continue
+                if txtfile != None:
+                    #variable to hold count of update attempts
+                    i = 0
+                    #global variable to hold count of objects successfully updated; find better way?
+                    global x
+                    x = 0
+                    try:
+                        for row in csvin:
+                            if len(row) == 5:
+                                name = row[0]
+                                dimension_units = row[1]
+                                depth = row[2]
+                                width = row[3]
+                                height = row[4]
+                                #takes data from spreadsheet and builds JSON
+                                new_location_profile = {'jsonmodel_type': 'location_profile', 'name': name,
+                                                         'height': height, 'width': width, 'depth': depth,
+                                                        'dimension_units': dimension_units}
+                                location_profile_data = json.dumps(new_location_profile)
+                                #Posts JSON to ArchivesSpace
+                                create_profile = requests.post(api_url + '/location_profiles', headers=headers, data=location_profile_data).json()
+                                writeoutfile = outfileprocess(txtfile, create_location)
+                            else:
+                                wrongcsv()
+                                return
+                    except:
+                            errors()
+                            return
+                    #do I need some error handling here as well???
+                    update_attempts.set(str(i))
+                    txtfile.write('\n' + 'Total update attempts: ' + str(i) + '\n')
+                    txtfile.write('Records updated successfully: ' + str(x) + '\n')
+                    timer(starttime)
+                    txtfile.close()
+                    write = writetolog()
+                    printoutput.insert(INSERT, write)
+                    done = script_finished()
+                # if no CSV is selected a pop-up message will appear and function will terminate
+                else:
+                    return
+            #if user is not logged in to API a pop-up message will appear and function will terminate
+            else:
+                return
+        #if no directory is selected a pop-up message will appear and function will terminate
+        else:
+            return
+    #if user selects Cancel a pop-up message will appear and function will terminate
+    else:
+        return                        
+
 #add locations to AS    
 def locations():
     go = areyousure()
@@ -355,7 +417,7 @@ def locations():
                     x = 0
                     try:
                         for row in csvin:
-                            if len(row) == 8:
+                            if len(row) == 9:
                                 i = i + 1
                                 building = row[0]
                                 room = row[1]
@@ -364,14 +426,25 @@ def locations():
                                 coordinate_2_label = row[4]
                                 coordinate_2_indicator = row[5]
                                 coordinate_3_label = row[6]
-                                coordinate_3_indicator = row[7]                                       
-                                new_location = {'jsonmodel_type': 'location', 'building': building,
-                                                         'room': room, 'coordinate_1_label': coordinate_1_label,
-                                                         'coordinate_1_indicator': coordinate_1_indicator,
-                                                         'coordinate_2_label': coordinate_2_label,
-                                                         'coordinate_2_indicator': coordinate_2_indicator,
-                                                         'coordinate_3_label': coordinate_3_label,
-                                                         'coordinate_3_indicator': coordinate_3_indicator}
+                                coordinate_3_indicator = row[7]
+                                location_profile = row[8]
+                                if location_profile != '':
+                                    new_location = {'jsonmodel_type': 'location', 'building': building,
+                                                             'room': room, 'coordinate_1_label': coordinate_1_label,
+                                                             'coordinate_1_indicator': coordinate_1_indicator,
+                                                             'coordinate_2_label': coordinate_2_label,
+                                                             'coordinate_2_indicator': coordinate_2_indicator,
+                                                             'coordinate_3_label': coordinate_3_label,
+                                                             'coordinate_3_indicator': coordinate_3_indicator,
+                                                             'location_profile': {'ref': location_profile}}
+                                else:
+                                    new_location = {'jsonmodel_type': 'location', 'building': building,
+                                                             'room': room, 'coordinate_1_label': coordinate_1_label,
+                                                             'coordinate_1_indicator': coordinate_1_indicator,
+                                                             'coordinate_2_label': coordinate_2_label,
+                                                             'coordinate_2_indicator': coordinate_2_indicator,
+                                                             'coordinate_3_label': coordinate_3_label,
+                                                             'coordinate_3_indicator': coordinate_3_indicator}
                                 location_data = json.dumps(new_location)
                                 create_location = requests.post(api_address.get() + '/locations', headers=heady, data=location_data).json()
                                 writeoutfile = outfileprocess(txtfile, create_location)
@@ -734,10 +807,11 @@ ttk.Label(mainframe, text='Step 4: Choose an action: \n', font=('Arial', 13)).gr
 
 #ACTIONS TO CHOOSE FROM BUTTONS
 containerbutton = ttk.Button(mainframe, text='Create container profiles', width=45, command=containerprofiles).grid(column=2, row=17, sticky=W+E)
-locationbutton = ttk.Button(mainframe, text='Create locations', width=50, command=locations).grid(column=3, row=17, sticky=W+E)
-topcontainerbutton = ttk.Button(mainframe, text='Create top containers', width=45, command=topcontainers).grid(column=2, row=18,sticky=W+E)
-restrictionbutton = ttk.Button(mainframe, text='Add restrictions', width=50, command=restrictions).grid(column=3, row=18, sticky=W+E)
-instancebutton = ttk.Button(mainframe, text='Create container instances', width=45, command=instances).grid(column=2, row=19, sticky=W+E)
+locationprofilebutton = ttk.Button(mainframe, text='Create location profiles', width=50, command=locationprofiles).grid(column=3, row=17, sticky=W+E)
+locationbutton = ttk.Button(mainframe, text='Create locations', width=45, command=locations).grid(column=2, row=18, sticky=W+E)
+topcontainerbutton = ttk.Button(mainframe, text='Create top containers', width=45, command=topcontainers).grid(column=3, row=18,sticky=W+E)
+restrictionbutton = ttk.Button(mainframe, text='Add restrictions', width=50, command=restrictions).grid(column=2, row=19, sticky=W+E)
+instancebutton = ttk.Button(mainframe, text='Create container instances', width=45, command=instances).grid(column=3, row=19, sticky=W+E)
 
 #-------STEP 5: REVIEW OUTPUT------#
 
