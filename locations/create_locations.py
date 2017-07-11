@@ -41,14 +41,23 @@ with open(input_csv, 'r', encoding='utf-8') as csvfile:
         coordinate_3_label = row[6]
         coordinate_3_indicator = row[7]
         location_profile = row[8]
-        new_location = {'jsonmodel_type': 'location', 'building': building,
-                                 'room': room, 'coordinate_1_label': coordinate_1_label,
-                                 'coordinate_1_indicator': coordinate_1_indicator,
-                                 'coordinate_2_label': coordinate_2_label,
-                                 'coordinate_2_indicator': coordinate_2_indicator,
-                                 'coordinate_3_label': coordinate_3_label,
-                                 'coordinate_3_indicator': coordinate_3_indicator
-                                 'location_profile': location_profile}
+        if location_profile != '':
+            new_location = {'jsonmodel_type': 'location', 'building': building,
+                                     'room': room, 'coordinate_1_label': coordinate_1_label,
+                                     'coordinate_1_indicator': coordinate_1_indicator,
+                                     'coordinate_2_label': coordinate_2_label,
+                                     'coordinate_2_indicator': coordinate_2_indicator,
+                                     'coordinate_3_label': coordinate_3_label,
+                                     'coordinate_3_indicator': coordinate_3_indicator,
+                                     'location_profile': {'ref': location_profile}}
+        else:
+            new_location = {'jsonmodel_type': 'location', 'building': building,
+                                     'room': room, 'coordinate_1_label': coordinate_1_label,
+                                     'coordinate_1_indicator': coordinate_1_indicator,
+                                     'coordinate_2_label': coordinate_2_label,
+                                     'coordinate_2_indicator': coordinate_2_indicator,
+                                     'coordinate_3_label': coordinate_3_label,
+                                     'coordinate_3_indicator': coordinate_3_indicator}
         location_data = json.dumps(new_location)
         create_location = requests.post(api_url + '/locations', headers=headers, data=location_data).json()
         print(create_location)
