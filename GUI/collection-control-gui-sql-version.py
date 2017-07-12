@@ -5,7 +5,6 @@
 
 #to-do -
 #column headers, error handling, etc.
-#add input window for text files - will use for get_access_notes and barcode_audit scripts
 
 #--------------------------------------------------------------MODULES---------------------------------------------------------------
 
@@ -20,6 +19,26 @@ import json, requests, csv, os, sys, subprocess, time, logging, re
 import pymysql
 
 #-----------------------------------------------------GUI FILE/ERROR HANDLING FUNCTIONS--------------------------------------------------
+
+def opentxt():
+    filename = filedialog.askopenfilename(parent=root)
+    filename_input.set(str(filename))
+    return filename
+
+def txtopen():
+    filename = filename_input.get()
+    if filename_input.get() == '':
+        notxt()
+        return
+    else:
+        file = open(filename, 'r', encoding='utf-8')
+        fileread = file.read()
+        return fileread
+
+def notxt():
+    messagebox.showerror('Error!', 'Please choose an input text file')
+    script_status.set('Script stopped due to error')
+    script_status.get()
 
 #select directory for output file
 def prewritefile():
@@ -470,30 +489,37 @@ def barcode_audit():
             cursor = connect.cursor()
             areyousure()
             output = writefile('barcode_audit')
-	    #add input file stuff here
-            for barcode in barcodelisty:
-		cursor.execute("""
-        	SELECT resource.ead_id AS EAD_ID
-            	    , resource.title AS Collection
-            	    , ao.display_string AS Archival_Object
-            	    , cp.name AS Container_Type
-            	    , tc.indicator AS Container_Number
-              	    , tc.barcode AS Barcode
-        	FROM sub_container sc
-        	left join enumeration_value on enumeration_value.id = sc.type_2_id
-        	left join top_container_link_rlshp tclr on tclr.sub_container_id = sc.id
-        	left join top_container tc on tclr.top_container_id = tc.id
-        	left join top_container_profile_rlshp tcpr on tcpr.top_container_id = tc.id
-        	left join container_profile cp on cp.id = tcpr.container_profile_id
-        	join instance on sc.instance_id = instance.id
-        	join archival_object ao on instance.archival_object_id = ao.id
-        	join resource on ao.root_record_id = resource.id
-        	WHERE tc.barcode LIKE """ + str(barcode))
-              	columns = cursor.description
-            	results = cursor.fetchall()
-            	out(results, output)
-            	cursor.close()
-            script_finished()
+            infile = txtopen()
+            if infile != None:
+                barcodelisty = infile.split('\n')
+                if barcodelisty[-1] == '':
+                    del barcodelisty[-1]
+                for barcode in barcodelisty:
+                    cursor.execute("""
+                    SELECT resource.ead_id AS EAD_ID
+                        , resource.title AS Collection
+                        , ao.display_string AS Archival_Object
+                        , cp.name AS Container_Type
+                        , tc.indicator AS Container_Number
+                        , tc.barcode AS Barcode
+                    FROM sub_container sc
+                    left join enumeration_value on enumeration_value.id = sc.type_2_id
+                    left join top_container_link_rlshp tclr on tclr.sub_container_id = sc.id
+                    left join top_container tc on tclr.top_container_id = tc.id
+                    left join top_container_profile_rlshp tcpr on tcpr.top_container_id = tc.id
+                    left join container_profile cp on cp.id = tcpr.container_profile_id
+                    join instance on sc.instance_id = instance.id
+                    join archival_object ao on instance.archival_object_id = ao.id
+                    join resource on ao.root_record_id = resource.id
+                    WHERE tc.barcode LIKE """ + str(barcode))
+                    columns = cursor.description
+                    results = cursor.fetchall()
+                    out(results, output)
+                    cursor.close()
+                script_finished()
+            else:
+                notxt()
+                return
     except Exception:
         errors() 
 		
@@ -507,31 +533,37 @@ def get_access_notes():
             cursor = connect.cursor()
             areyousure()
             output = writefile('access_restrictions')
-	    #add input here...
-	    for ead in eadlisty:
-	    	cursor.execute("""
-		SELECT DISTINCT resource.ead_id AS EAD_ID
-		    , resource.identifier AS Identifier
-	            , resource.title AS Resource_Title
-	            , ev.value AS LEVEL
-        	    , rr.restriction_note_type AS Restriction_Type
-        	    , rr.begin AS BEGIN_DATE
-        	    , rr.end AS END_DATE
-        	    , CAST(note.notes as CHAR (10000) CHARACTER SET UTF8) AS restriction_text
-        	    , CONCAT('/repositories/', resource.repo_id, '/resources/', resource.id) AS Resource_URL
-    		FROM rights_restriction rr
-    		LEFT JOIN resource on resource.id = rr.resource_id
-   		LEFT JOIN enumeration_value ev on ev.id = resource.level_id
-    		LEFT JOIN note on resource.id = note.resource_id
-    		WHERE resource.repo_id = 12 #enter your repo_id here
-    		AND rr.restriction_note_type LIKE '%accessrestrict%'
-    		AND note.notes LIKE '%accessrestrict%'
-    		AND resource.ead_id LIKE '%""" + ead + """%'""")	
-              	columns = cursor.description
-            	results = cursor.fetchall()
-            	out(results, output)
-            	cursor.close()
-            script_finished()
+            if infile != None:
+                eadlisty = infile.split('\n')
+                if eadisty[-1] == '':
+                    del eadlisty[-1]
+                for ead in eadlisty:
+                    cursor.execute("""
+                    SELECT DISTINCT resource.ead_id AS EAD_ID
+                        , resource.identifier AS Identifier
+                        , resource.title AS Resource_Title
+                        , ev.value AS LEVEL
+                        , rr.restriction_note_type AS Restriction_Type
+                        , rr.begin AS BEGIN_DATE
+                        , rr.end AS END_DATE
+                        , CAST(note.notes as CHAR (10000) CHARACTER SET UTF8) AS restriction_text
+                        , CONCAT('/repositories/', resource.repo_id, '/resources/', resource.id) AS Resource_URL
+                    FROM rights_restriction rr
+                    LEFT JOIN resource on resource.id = rr.resource_id
+                    LEFT JOIN enumeration_value ev on ev.id = resource.level_id
+                    LEFT JOIN note on resource.id = note.resource_id
+                    WHERE resource.repo_id = 12 #enter your repo_id here
+                    AND rr.restriction_note_type LIKE '%accessrestrict%'
+                    AND note.notes LIKE '%accessrestrict%'
+                    AND resource.ead_id LIKE '%""" + ead + """%'""")
+                    columns = cursor.description
+                    results = cursor.fetchall()
+                    out(results, output)
+                    cursor.close()
+                script_finished()
+            else:
+                notxt()
+                return
     except Exception:
         errors() 
 #----------------------------------------------------------------GUI SETUP--------------------------------------------------------
@@ -612,7 +644,7 @@ update_attempts = StringVar()
 log_file = StringVar()
 error_dialog = StringVar()
 script_status = StringVar()
-
+filename_input = StringVar()
 eadid = StringVar()
 repoid = StringVar()
 sqlpassword = StringVar()
@@ -657,6 +689,14 @@ password_input.grid(column=2, row=8, sticky=W)
 #CONNECT BUTTON, LOGIN CONFIRMATION/DENIAL
 connectbutton = ttk.Button(mainframe, text='Connect!', command=sql_login).grid(column=3, row=9, sticky=E)
 ttk.Label(mainframe, textvariable=login_confirmed, font=('Arial', 11)).grid(column=3, row=8, sticky=E)
+
+#SELECT INPUT CSV HEADER
+ttk.Label(mainframe, text='Step 2: Select input text file (barcode audit and access note queries only): ', font=('Arial', 13)).grid(column=2, row=10, columnspan=3, sticky=W)
+
+#INPUT CSV BUTTON AND LABEL INDICATING WHICH FILE IS OPEN
+selectfilebutton = ttk.Button(mainframe, text='Select Input File', command=opentxt).grid(column=3, row=10, sticky=E)
+ttk.Label(mainframe, text='File selected: ', font=('Arial', 11)).grid(column=2, row=11, sticky=W)
+ttk.Label(mainframe, textvariable=filename_input, width=90, font=('Arial', 10)).grid(column=2, row=12, columnspan=3, sticky=W)
 
 #OUTPUT TXT BUTTON AND LABEL INDICATING WHICH DIRECTORY IS OPEN
 ttk.Label(mainframe, text='Step 2: Select output directory: ', font=('Arial', 13)).grid(column=2, row=18, sticky=W)
