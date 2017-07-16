@@ -34,6 +34,7 @@ Simple tools to make the most of collection control functionality in ArchivesSpa
 ### Requirements:
 * ArchivesSpace 1.5+ (NOT TESTED ON AS 2.0+)
 * Access to ArchivesSpace database, login credentials (host name, database name, port, username, password)
+* Administrator access to your computer, likely
 * LibreOffice: https://www.libreoffice.org - free and open source; works particularly well for CSVs; Excel tends to mess with barcodes, so avoid if possible, especially when making changes to containers
 * Standalone scripts: SQL Client
   * Software Recommendations:
@@ -130,6 +131,8 @@ Clean up messy data retrieved from queries - upload this data to ArchivesSpace v
 
 * Possible Uses:
  * Break out locations data (ranges, shelf numbers, etc.) that was combined into a single field during ASpace import
+ * Normalize box and folder numbering
+ * Cluster terms for containers to create a definitive container profile list from existing data
 
 #### Common regular expression patterns for identifying and remediating archival data
 
@@ -192,6 +195,7 @@ Add locations data to ArchivesSpace
 ##### top_container_template.csv
 
 * Use this spreadsheet to enter your top container data
+* Suggestion: if possible, work collection-by-collection to upload container data, and associate the containers for each collection with their archival objects before moving on to the next collection.
 
 ##### create_top_containers.py
 
@@ -237,16 +241,25 @@ Add machine-actionable restrictions to ArchivesSpace
 [![Downloading Github Repository](https://img.youtube.com/vi/u-U6lMWdK9M/0.jpg)](https://www.youtube.com/watch?v=u-U6lMWdK9M "ArchivesSpace Collection Control Screencasts: Download Github Repo")
 
 ### Set Up Python Environment in Anaconda
-[![Setting Up Your Environment](https://img.youtube.com/vi/2_QsJv6XR2Y/0.jpg)](https://www.youtube.com/watch?v=2_QsJv6XR2Y 
-"ArchivesSpace Collection Control Screencasts: Set Up Your Environment")
+[![Setting Up Your Environment](https://img.youtube.com/vi/9oZAsTC3aMo/0.jpg)](https://www.youtube.com/watch?v=9oZAsTC3aMo 
+"ArchivesSpace Collection Control Screencasts: Set Up Anaconda Environment ")
 
-### Run Collection Control Scripts from Anaconda Terminal/Command Prompt
-[![Running Scripts in Anaconda](https://img.youtube.com/vi/SunLjKqWNsE/0.jpg)](https://www.youtube.com/watch?v=SunLjKqWNsE 
-"ArchivesSpace Collection Control Screencasts: Running Scripts in Anaconda")
+### Run Collection Control Scripts on a Mac
+[![Running Scripts on a Mac](https://img.youtube.com/vi/QWe7YyquIJM/0.jpg)](https://www.youtube.com/watch?v=QWe7YyquIJM 
+"ArchivesSpace Collection Control Screencasts: Run Python Scripts on a Mac ")
+
+### Run Collection Control Scripts on a PC
+* This demo is for Windows 10
+
+### Using the GUIs
+
+### Using the Standalone Scripts
+[![Using Standalone Scripts](https://img.youtube.com/vi/T-8j_B_GBJI/0.jpg)](https://www.youtube.com/watch?v=T-8j_B_GBJI
+"ArchivesSpace Collection Control Screencasts: Running Standalone Scripts")
+
 
 ## Software Downloads/Further Reading
 
-* Python 3: 
 * Installing third-party Python modules: https://python4astronomers.github.io/installation/packages.html
                                          https://docs.python.org/3/installing/
 * ArchivesSpace API reference: http://archivesspace.github.io/archivesspace/api/ 
