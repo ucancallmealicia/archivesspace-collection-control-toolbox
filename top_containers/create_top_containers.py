@@ -43,11 +43,12 @@ with open(input_csv, 'r', encoding='utf-8') as csvfile, open(output_txt, 'a') as
         container_profile_uri = row[2]
         locations = row[3]
         start_date = row[4]
-        if len(barcode) == 14:
+        repo_num = row[5]
+        if barcode != '':
             create_tc = {'barcode': barcode, 'container_profile': {'ref': container_profile_uri}, 'indicator': indicator,
                          'container_locations': [{'jsonmodel_type': 'container_location', 'status': 'current', 'start_date': start_date,
                                                   'ref': locations}],
-                         'jsonmodel_type': 'top_container', 'repository': {'ref': '/repositories/12'}}
+                         'jsonmodel_type': 'top_container', 'repository': {'ref': repo_num}}
         else:
             create_tc = {'container_profile': {'ref': container_profile_uri}, 'indicator': indicator,
                          'container_locations': [{'jsonmodel_type': 'container_location', 'status': 'current', 'start_date': start_date,
@@ -55,10 +56,14 @@ with open(input_csv, 'r', encoding='utf-8') as csvfile, open(output_txt, 'a') as
                          'jsonmodel_type': 'top_container', 'repository': {'ref': '/repositories/12'}}
         tcdata = json.dumps(create_tc)
         tcupdate = requests.post(api_url + '/repositories/12/top_containers', headers=headers, data=tcdata).json()
-        for key, value in tcupdate.items():
-            if key == 'uri':
-                txtout.write(value + '\n')
         print(tcupdate)
+        for key, value in tcupdate.items():
+            if key == 'status':
+                txtout.write('%s:%s\n' % (key, value))
+            if key == 'uri':
+                txtout.write('%s:%s\n' % (key, value) + '\n')
+            if key == 'error':
+                txtout.write('%s:%s\n' % (key, value))
     txtout.close()
 
 
