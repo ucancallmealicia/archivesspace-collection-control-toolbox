@@ -28,8 +28,10 @@ if __name__ == '__main__':
         print('Ooops! something went wrong')
 
 input_csv = input("Please enter path to input CSV: ")
+#text file for update info
+outfile = input("Please enter path to output text file: ")
 
-with open(input_csv, 'r', encoding='utf-8') as csvfile:
+with open(input_csv, 'r', encoding='utf-8') as csvfile, open(outfile, 'a') as txtout:
     csvin = csv.reader(csvfile)
     next(csvin, None)
     for row in csvin:
@@ -61,7 +63,16 @@ with open(input_csv, 'r', encoding='utf-8') as csvfile:
         ao_update = requests.post(api_url + archival_object_URI, headers=headers, data=ao_data).json()
         #what's happening?
         print(ao_update)
-#add outfile for error logging
+        for key, value in ao_update.items():
+            if key == 'status':
+                txtout.write('%s:%s\n' % (key, value))
+                x = x +1
+            if key == 'uri':
+                txtout.write('%s:%s\n' % (key, value) + '\n')
+            if key == 'error':
+                txtout.write('%s:%s\n' % (key, value))
+    txtout.close()
+    
 print('All Done!')
         
         
