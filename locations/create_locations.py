@@ -27,8 +27,10 @@ if __name__ == '__main__':
         print('Ooops! something went wrong')
 
 input_csv = input("Please enter path to input CSV: ")
+#text file for update info
+outfile = input("Please enter path to output text file: ")
 
-with open(input_csv, 'r', encoding='utf-8') as csvfile:
+with open(input_csv, 'r', encoding='utf-8') as csvfile, open(outfile, 'a') as txtout:
     csvin = csv.reader(csvfile)
     next(csvin, None)
     for row in csvin:
@@ -61,7 +63,16 @@ with open(input_csv, 'r', encoding='utf-8') as csvfile:
         location_data = json.dumps(new_location)
         create_location = requests.post(api_url + '/locations', headers=headers, data=location_data).json()
         print(create_location)
-#add outfile for error logging
+        for key, value in create_location.items():
+            if key == 'status':
+                txtout.write('%s:%s\n' % (key, value))
+                x = x +1
+            if key == 'uri':
+                txtout.write('%s:%s\n' % (key, value) + '\n')
+            if key == 'error':
+                txtout.write('%s:%s\n' % (key, value))
+    txtout.close()
+    
 print('All Done!')
         
         
