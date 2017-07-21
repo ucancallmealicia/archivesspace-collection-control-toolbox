@@ -56,7 +56,6 @@ with open(input_csv, 'r', encoding='utf-8') as csvfile, open(outfile, 'a') as tx
         for key, value in create_profile.items():
             if key == 'status':
                 txtout.write('%s:%s\n' % (key, value))
-                x = x +1
             if key == 'uri':
                 txtout.write('%s:%s\n' % (key, value) + '\n')
             if key == 'error':
