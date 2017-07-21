@@ -257,13 +257,18 @@ Add machine-actionable restrictions to ArchivesSpace
 [![Using Standalone Scripts](https://img.youtube.com/vi/T-8j_B_GBJI/0.jpg)](https://www.youtube.com/watch?v=T-8j_B_GBJI
 "ArchivesSpace Collection Control Screencasts: Running Standalone Scripts")
 
-
-## Software Downloads/Further Reading
-
+## Python/SQL Resources
 * Installing third-party Python modules: https://python4astronomers.github.io/installation/packages.html
                                          https://docs.python.org/3/installing/
-* ArchivesSpace API reference: http://archivesspace.github.io/archivesspace/api/ 
 * Python 3 Syntax: https://docs.python.org/3/tutorial/
 * SQL Syntax: https://dev.mysql.com/doc/refman/5.7/en/tutorial.html
 * Great archives-specific intro to Python - https://practicaltechnologyforarchives.org/issue7_wiedeman/
 
+## ArchivesSpace Resources
+* ArchivesSpace API reference: http://archivesspace.github.io/archivesspace/api/ 
+* Machine-Actionable restriction specification: http://bit.ly/2uhHVlO
+* Yale Libguide: http://guides.library.yale.edu/archivesspace/ASpaceContainerManagement
+* Manuals and Training Resources: https://sites.google.com/site/archivesspacetraining/archivesspace-manuals--training-resources
+* NYU ArchivesSpace Manual: http://bit.ly/2tmGNvL
+* ArchivesSpace 1.5 Webinar: http://archivesspace.org/recording-and-slides-for-v1-5-0-release-webinar/
+* ArchivesSpace Developer Screencasts: https://www.youtube.com/playlist?list=PLJFitFaE9AY_DDlhl3Kq_vFeX27F1yt6I
