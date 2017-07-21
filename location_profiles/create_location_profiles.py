@@ -29,9 +29,11 @@ if __name__ == '__main__':
 #The magic happens here...
 #Enter full path to spreadsheet where container profile data is stored
 input_csv = input("Please enter path to input CSV: ")
+#text file for update info
+outfile = input("Please enter path to output text file: ")
 
 #Opens spreadsheet, reads data into memory
-with open(input_csv, 'r', encoding='utf-8') as csvfile:
+with open(input_csv, 'r', encoding='utf-8') as csvfile, open(outfile, 'a') as txtout::
     csvin = csv.reader(csvfile)
     #skip header row
     next(csvin, None)
@@ -51,5 +53,14 @@ with open(input_csv, 'r', encoding='utf-8') as csvfile:
         create_profile = requests.post(api_url + '/location_profiles', headers=headers, data=location_profile_data).json()
         #Prints what is happening to IDLE window - will add an error log as well
         print(create_profile)
-        
+        for key, value in create_profile.items():
+            if key == 'status':
+                txtout.write('%s:%s\n' % (key, value))
+                x = x +1
+            if key == 'uri':
+                txtout.write('%s:%s\n' % (key, value) + '\n')
+            if key == 'error':
+                txtout.write('%s:%s\n' % (key, value))
+    txtout.close()
+    
 print('All Done!')
