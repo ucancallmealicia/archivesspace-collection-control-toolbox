@@ -33,7 +33,7 @@ input_csv = input("Please enter path to input CSV: ")
 outfile = input("Please enter path to output text file: ")
 
 #Opens spreadsheet, reads data into memory
-with open(input_csv, 'r', encoding='utf-8') as csvfile, open(outfile, 'a') as txtout::
+with open(input_csv, 'r', encoding='utf-8') as csvfile, open(outfile, 'a') as txtout:
     csvin = csv.reader(csvfile)
     #skip header row
     next(csvin, None)
