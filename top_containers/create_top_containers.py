@@ -53,7 +53,7 @@ with open(input_csv, 'r', encoding='utf-8') as csvfile, open(output_txt, 'a') as
             create_tc = {'container_profile': {'ref': container_profile_uri}, 'indicator': indicator,
                          'container_locations': [{'jsonmodel_type': 'container_location', 'status': 'current', 'start_date': start_date,
                                                   'ref': locations}],
-                         'jsonmodel_type': 'top_container', 'repository': {'ref': '/repositories/12'}}
+                         'jsonmodel_type': 'top_container', 'repository': {'ref': repo_num}}
         tcdata = json.dumps(create_tc)
         tcupdate = requests.post(api_url + '/repositories/12/top_containers', headers=headers, data=tcdata).json()
         print(tcupdate)
