@@ -55,7 +55,7 @@ with open(input_csv, 'r', encoding='utf-8') as csvfile, open(output_txt, 'a') as
                                                   'ref': locations}],
                          'jsonmodel_type': 'top_container', 'repository': {'ref': repo_num}}
         tcdata = json.dumps(create_tc)
-        tcupdate = requests.post(api_url + '/repositories/12/top_containers', headers=headers, data=tcdata).json()
+        tcupdate = requests.post(api_url + repo_num + /top_containers', headers=headers, data=tcdata).json()
         print(tcupdate)
         for key, value in tcupdate.items():
             if key == 'status':
