@@ -22,20 +22,32 @@ def combine_csvs():
 
 #Join two spreadsheets on a common column
 def join_csvs():
-    dataset_a = input('Please enter path to first CSV: ')
-    dataset_b = input('Please enter path to second CSV: ')
+    data_a = input('Please enter path to first CSV: ')
+    data_b = input('Please enter path to second CSV: ')
+    dataset_a = pd.read_csv(data_a)
+    dataset_b = pd.read_csv(data_b)
+    headerlist = dataset.columns.values.tolist()
+    headlist = str(headerlist)
+    head = headlist[1:-1]
+    print('Columns: ' + head)
     mergevar = input('Enter common column: ')
     merged = dataset_a.join(dataset_b)
 
 ##Data Analysis
 #Get all values that meet a certain criteria
 def group_by():
-    dataset = input('Please enter path to input CSV: ')
+    data = input('Please enter path to input CSV: ')
+    dataset = pd.read_csv(data)
+    headerlist = dataset.columns.values.tolist()
+    headlist = str(headerlist)
+    head = headlist[1:-1]
+    print('Columns: ' + head)
     columnname = input('In what column is your group located?: ')
     groupname = input('What value are you looking for?')
     group = dataset.groupby(columnname)
     grouped = group.get_group(groupname)
     grouped.to_csv('group.csv', encoding='utf-8')
+    print(grouped)
 
 #Get count of values in a column
 def get_val_counts():
@@ -47,7 +59,7 @@ def get_val_counts():
     print('Columns: ' + head)
     columnname = input('Please enter column name: ')
     counts = dataset[columnname].value_counts()
-    #count add to a text file or CSV...
+    counts.to_csv('counts.csv', encoding='utf-8')
     print(counts)
 
 #Get a summary of data
@@ -57,9 +69,16 @@ def describe():
     description = data.describe()
     description.to_csv('description.csv', encoding='utf-8')
 
-#Get a date range
-def get_date_range():
-    dataset = input('Please enter path to input CSV: ')
+#Get a date range - maybe later
+##def get_date_range():
+##    data = input('Please enter path to input CSV: ')
+##    dataset = pd.read_csv(data)
+##    start_date = input('Please enter the start date (mm/dd/yyyy): ')
+##    timerange = input('Please enter time span (hours, days, years, etc.: ')
+##    frequency = input('Please enter freqency (hours, days, years, etc.: ')
+##    rng = pd.date_range(start_date, periods=timerange, freq=frequency)
+##    print(rng)
+##    rng.to_csv('time_range.csv', encoding='utf-8')
     
 startit = True
 def start():
@@ -70,7 +89,6 @@ def start():
         3 - Group data
         4 - Get counts of each value in a column
         5 - Get a summary of your data
-        6 - Get a date range
 
         Selection: ''')
 
@@ -89,9 +107,9 @@ def start():
     if userselect == '5':
         print('\nYou have selected Action 5 - Describe your dataset\n')
         describe()
-    if userselect == '6':
-        print('\nYou have selected Action 6 - Get a date range\n')
-        get_date_range()
+##    if userselect == '6':
+##        print('\nYou have selected Action 6 - Get a date range\n')
+##        get_date_range()
 
 while startit:
     start()
