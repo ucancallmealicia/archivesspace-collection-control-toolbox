@@ -140,10 +140,11 @@ def clear_inputs():
     else:
         return
 
-def out(r, o):
+def out(r, o, h):
     update_attempts.set(str(len(r)))
+    writer = csv.writer(o)
+    writer.writerow(h)
     for row in r:
-        writer = csv.writer(o)
         writer.writerows([row])
 
 #-------------------------------------------------------------AS SQL FUNCTIONS-----------------------------------------------------
@@ -181,11 +182,14 @@ def get_archobj_instances():
             f = MyDialog(root, 'repo_id')
             root.wait_window(f.top)
             areyousure()
+            headers = ['EAD_ID', 'Resource_ID', 'Resource_Title', 'Archival_Object_Title', 'Archival_Object_Level',
+                       'Resource_URI', 'Archival_Object_URI', 'Barcode', 'Top_Container_Type', 'TC_Indicator', 'Sub_Container_Type',
+                       'SC_Indicator']
             output = writefile(eadid.get())
             cursor.execute("""
             SELECT resource.ead_id AS EAD_ID
                 , resource.identifier AS Resource_ID
-                , resource.title AS Collection_Title
+                , resource.title AS Resource_Title
                 , ao.display_string AS Archival_Object_Title
                 , ev2.value AS AO_Level
                 , CONCAT('/repositories/', resource.repo_id, '/resources/', resource.id) AS Resource_URL
@@ -215,7 +219,7 @@ def get_archobj_instances():
             """)         
             columns = cursor.description
             results = cursor.fetchall()
-            out(results, output)
+            out(results, output, headers)
             cursor.close()
             script_finished()
     except Exception:
@@ -231,6 +235,8 @@ def get_container_profiles():
             cursor = connect.cursor()
             areyousure()
             output = writefile('container_profiles')
+            headers = ['Container_Profile_Name', 'Extent_Dimension', 'Height', 'Width',
+                       'Depth', 'Dimension_Units', 'Container_Profile_URI']
             cursor.execute("""
             SELECT cp.name
                 , cp.extent_dimension
@@ -243,7 +249,7 @@ def get_container_profiles():
             LEFT JOIN enumeration_value ev on ev.id = cp.dimension_units_id""")         
             columns = cursor.description
             results = cursor.fetchall()
-            out(results, output)
+            out(results, output, headers)
             cursor.close()
             script_finished()
     except Exception:
@@ -260,6 +266,9 @@ def get_locations():
             cursor = connect.cursor()
             areyousure()
             output = writefile('locations')
+            headers = ['Location_Name', 'Building', 'Floor', 'Room', 'Area', 'Coordinate_1_Label',
+                       'Coordinate_1_Indicator', 'Coordinate_2_Label', 'Coordinate_2_Indicator',
+                       'Coordinate_3_Label', 'Coordinate_3_Indicator', 'Location_URI', 'Location_Profile_URI']
             cursor.execute("""
 	    SELECT l.title
 		, l.building
@@ -279,11 +288,52 @@ def get_locations():
 	    LEFT JOIN location_profile lp on lp.id = lpr.location_profile_id""")         
             columns = cursor.description
             results = cursor.fetchall()
-            out(results, output)
+            out(results, output, headers)
             cursor.close()
             script_finished()
     except Exception:
         errors()
+
+def get_boxes():
+    try:
+        connect = sql_login()
+        if connect == None:
+            login_error()
+            return
+        else:
+            cursor = connect.cursor()
+            d = MyDialog(root, 'ead_id')
+            root.wait_window(d.top)
+            f = MyDialog(root, 'repo_id')
+            root.wait_window(f.top)
+            areyousure()
+            output = writefile('box_list')
+            headers = ['Barcode', 'Container_Profile_Name', 'Indicator', 'Resource_Title']
+            cursor.execute("""
+            SELECT DISTINCT tc.barcode AS Barcode
+                , cp.name AS Container_Type
+                , tc.indicator AS Container_Number
+                , resource.title AS Resource_Title
+            from sub_container sc
+            left join top_container_link_rlshp tclr on tclr.sub_container_id = sc.id
+            left join top_container tc on tclr.top_container_id = tc.id
+            left join top_container_profile_rlshp tcpr on tcpr.top_container_id = tc.id
+            left join container_profile cp on cp.id = tcpr.container_profile_id
+            #have to do sub_container because that's where the instances can be linked to...
+            left join instance on sc.instance_id = instance.id
+            #have to join the archival object table on the instance table since instances are linked to aos not resources...
+            left join archival_object ao on instance.archival_object_id = ao.id
+            left join resource on ao.root_record_id = resource.id
+            WHERE resource.repo_id = """ + repoid.get() + """
+            AND resource.ead_id LIKE '%""" + eadid.get() + """%'""")         
+            columns = cursor.description
+            results = cursor.fetchall()
+            out(results, output, headers)
+            cursor.close()
+            script_finished()
+    except Exception:
+        errors()
+
 
 def get_top_containers():
     try:
@@ -297,6 +347,8 @@ def get_top_containers():
             root.wait_window(d.top)
             areyousure()
             output = writefile('top_containers')
+            headers = ['Container_Profile_Name', 'TC_Indicator', 'Location_Name', 'Location_URI',
+                       'Container_Profile_URI', 'TC_URI']
             cursor.execute("""
             SELECT tc.barcode as barcode
                 , cp.name as container_profile_name
@@ -314,7 +366,7 @@ def get_top_containers():
             ORDER BY top_container_uri""")         
             columns = cursor.description
             results = cursor.fetchall()
-            out(results, output)
+            out(results, output, headers)
             cursor.close()
             script_finished()
     except Exception:
@@ -333,6 +385,9 @@ def get_resource_restrictions():
             root.wait_window(d.top)
             areyousure()
             output = writefile('resource_restrictions')
+            headers = ['EAD_ID', 'Resource_Identifier', 'Resource_Title', 'Level',
+                       'Restriction_Type', 'Begin_Date', 'End_Date', 'Restriction_Note_Text',
+                       'Resource_URI']
             cursor.execute("""
             SELECT DISTINCT resource.ead_id AS EAD_ID
         	, resource.identifier AS Identifier
@@ -352,7 +407,7 @@ def get_resource_restrictions():
             AND note.notes LIKE '%accessrestrict%'""")         
             columns = cursor.description
             results = cursor.fetchall()
-            out(results, output)
+            out(results, output, headers)
             cursor.close()
             script_finished()
     except Exception:
@@ -370,6 +425,9 @@ def get_ao_restrictions():
             root.wait_window(d.top)
             areyousure()
             output = writefile('archival_object_restrictions')
+            headers = ['EAD_ID', 'Resource_Identifier', 'Resource_Title', 'Level',
+                      'Archival_Object_Title', 'Restriction_Type', 'Begin_Date', 'End_Date',
+                      'Restriction_Note_Text', 'Resource_URI', 'Archival_Object_URI']
             cursor.execute("""
             SELECT resource.ead_id AS EAD_ID
         	, resource.identifier AS Identifier
@@ -392,11 +450,15 @@ def get_ao_restrictions():
             AND note.notes LIKE '%accessrestrict%'""")         
             columns = cursor.description
             results = cursor.fetchall()
-            out(results, output)
+            out(results, output, headers)
             cursor.close()
             script_finished()
     except Exception:
         errors()
+
+#Add this later...just from rights_restriction table...
+def get_mars():
+    x = x
 
 def get_archival_objects():
     try:
@@ -412,6 +474,8 @@ def get_archival_objects():
             root.wait_window(f.top)
             areyousure()
             output = writefile(eadid.get())
+            headers = ['EAD_ID', 'Resource_ID', 'Resource_Title', 'AO10', 'AO09', 'AO08', 'AO07', 'AO06',
+                       'AO05', 'AO04', 'AO03', 'AO02', 'AO01', 'AO_Level', 'Resource_URL', 'Archival_Object_URL']
             cursor.execute("""
             SELECT resource.ead_id AS EAD_ID
         	, resource.identifier AS Resource_ID
@@ -446,7 +510,7 @@ def get_archival_objects():
             Group by aoa.id""")         
             columns = cursor.description
             results = cursor.fetchall()
-            out(results, output)
+            out(results, output, headers)
             cursor.close()
             script_finished()
     except Exception:
@@ -462,6 +526,7 @@ def get_location_profiles():
             cursor = connect.cursor()
             areyousure()
             output = writefile('location_profiles')
+            headers = ['Name', 'Depth', 'Width', 'Height', 'Dimension_Units', 'Location_Profile_URI']
             cursor.execute("""
 	    SELECT lp.name
 		, lp.depth
@@ -473,7 +538,7 @@ def get_location_profiles():
 	    LEFT JOIN enumeration_value ev on ev.id = lp.dimension_units_id""")         
             columns = cursor.description
             results = cursor.fetchall()
-            out(results, output)
+            out(results, output, headers)
             cursor.close()
             script_finished()
     except Exception:
@@ -489,6 +554,7 @@ def barcode_audit():
             cursor = connect.cursor()
             areyousure()
             output = writefile('barcode_audit')
+            headers = ['EAD_ID', 'Resource_Title', 'Archival_Object_Title', 'Container_Type', 'Container_Number', 'Barcode']
             infile = txtopen()
             if infile != None:
                 barcodelisty = infile.split('\n')
@@ -514,7 +580,7 @@ def barcode_audit():
                     WHERE tc.barcode LIKE """ + str(barcode))
                     columns = cursor.description
                     results = cursor.fetchall()
-                    out(results, output)
+                    out(results, output, headers)
                     cursor.close()
                 script_finished()
             else:
@@ -530,35 +596,32 @@ def get_access_notes():
             login_error()
             return
         else:
-            cursor = connect.cursor()
             areyousure()
             output = writefile('access_restrictions')
+            headers = ['Resource_ID', 'EAD_ID', 'Begin_Date', 'End_Date', 'Restriction_Text', 'Resource_URL']
+            infile = txtopen()
             if infile != None:
                 eadlisty = infile.split('\n')
                 if eadisty[-1] == '':
                     del eadlisty[-1]
                 for ead in eadlisty:
                     cursor.execute("""
-                    SELECT DISTINCT resource.ead_id AS EAD_ID
-                        , resource.identifier AS Identifier
-                        , resource.title AS Resource_Title
-                        , ev.value AS LEVEL
-                        , rr.restriction_note_type AS Restriction_Type
-                        , rr.begin AS BEGIN_DATE
-                        , rr.end AS END_DATE
-                        , CAST(note.notes as CHAR (10000) CHARACTER SET UTF8) AS restriction_text
-                        , CONCAT('/repositories/', resource.repo_id, '/resources/', resource.id) AS Resource_URL
-                    FROM rights_restriction rr
-                    LEFT JOIN resource on resource.id = rr.resource_id
-                    LEFT JOIN enumeration_value ev on ev.id = resource.level_id
-                    LEFT JOIN note on resource.id = note.resource_id
+                    SELECT DISTINCT resource.id
+                	, resource.ead_id
+                        , rr.begin as Begin_Date
+                        , rr.end as End_Date
+                        , CAST(note.notes as CHAR (15000) CHARACTER SET UTF8) AS Text
+                       , CONCAT('/repositories/', resource.repo_id, '/resources/', resource.id) AS Resource_URL
+                    FROM note
+                    LEFT JOIN resource on note.resource_id=resource.id
+                    LEFT JOIN rights_restriction rr on rr.resource_id = resource.id
                     WHERE resource.repo_id = 12 #enter your repo_id here
-                    AND rr.restriction_note_type LIKE '%accessrestrict%'
-                    AND note.notes LIKE '%accessrestrict%'
+                    AND note.notes LIKE '%accessrestrict%' 
+                    OR note.notes LIKE '%userestrict%
                     AND resource.ead_id LIKE '%""" + ead + """%'""")
                     columns = cursor.description
                     results = cursor.fetchall()
-                    out(results, output)
+                    out(results, output, headers)
                     cursor.close()
                 script_finished()
             else:
@@ -612,7 +675,7 @@ def onFrameConfigure(canvas):
 #mainframe and canvas, employing scrollbar class
 root = Tk()
 root.title('ArchivesSpace Collection Control Toolbox TEST GUI - SQL Version')
-root.geometry('580x665')
+root.geometry('650x800')
 
 vscrollbar = AutoScrollbar(root)
 vscrollbar.grid(row=0, column=1, sticky=N+S)
@@ -661,28 +724,28 @@ ttk.Label(mainframe, text='Step 1: Log in to ArchivesSpace MySQL Database: ', fo
 #------STEP 1B: LOG IN TO ARCHIVESSPACE DATABASE-------#
 
 #SQL Database Host Name
-ttk.Label(mainframe, text='Database Host Name: ', font=('Arial', 11)).grid(column=2, row=3, sticky=W)
-username_input = ttk.Entry(mainframe, width=40, textvariable=sqlhostname)
-username_input.grid(column=2, row=4, sticky=W)
+ttk.Label(mainframe, text='Database Host Name: ', font=('Arial', 11)).grid(column=2, row=3, sticky=N+S)
+username_input = ttk.Entry(mainframe, width=40, textvariable=sqlhostname, show='*')
+username_input.grid(column=2, row=4, sticky=N+S)
 #SQL Database Name
-ttk.Label(mainframe, text='Database Name: ', font=('Arial', 11)).grid(column=3, row=3, sticky=W)
-username_input = ttk.Entry(mainframe, width=40, textvariable=sqldbname)
-username_input.grid(column=3, row=4, sticky=W)
+ttk.Label(mainframe, text='Database Name: ', font=('Arial', 11)).grid(column=3, row=3, sticky=N+S)
+username_input = ttk.Entry(mainframe, width=40, textvariable=sqldbname, show='*')
+username_input.grid(column=3, row=4, sticky=N+S)
 
 #SQL Database Username
-ttk.Label(mainframe, text='Database Username: ', font=('Arial', 11)).grid(column=2, row=5, sticky=W)
-password_input = ttk.Entry(mainframe, width=40, textvariable=sqlusername)
-password_input.grid(column=2, row=6, sticky=W)
+ttk.Label(mainframe, text='Database Username: ', font=('Arial', 11)).grid(column=2, row=5, sticky=N+S)
+password_input = ttk.Entry(mainframe, width=40, textvariable=sqlusername, show='*')
+password_input.grid(column=2, row=6, sticky=N+S)
 
 #SQL Port Name
-ttk.Label(mainframe, text='Database Port: ', font=('Arial', 11)).grid(column=3, row=5, sticky=W)
-username_input = ttk.Entry(mainframe, width=40, textvariable=sqlport)
-username_input.grid(column=3, row=6, sticky=W)
+ttk.Label(mainframe, text='Database Port: ', font=('Arial', 11)).grid(column=3, row=5, sticky=N+S)
+username_input = ttk.Entry(mainframe, width=40, textvariable=sqlport, show='*')
+username_input.grid(column=3, row=6, sticky=N+S)
 
 #SQL Database Password
-ttk.Label(mainframe, text='Database Password: ', font=('Arial', 11)).grid(column=2, row=7, sticky=W)
+ttk.Label(mainframe, text='Database Password: ', font=('Arial', 11)).grid(column=2, row=7, sticky=N+S)
 password_input = ttk.Entry(mainframe, width=40, textvariable=sqlpassword, show='*')
-password_input.grid(column=2, row=8, sticky=W)
+password_input.grid(column=2, row=8, sticky=N+S)
 
 
 
@@ -691,7 +754,7 @@ connectbutton = ttk.Button(mainframe, text='Connect!', command=sql_login).grid(c
 ttk.Label(mainframe, textvariable=login_confirmed, font=('Arial', 11)).grid(column=3, row=8, sticky=E)
 
 #SELECT INPUT CSV HEADER
-ttk.Label(mainframe, text='Step 2: Select input text file (barcode audit and access note queries only): ', font=('Arial', 13)).grid(column=2, row=10, columnspan=3, sticky=W)
+ttk.Label(mainframe, text='Step 2: Select input text file: ', font=('Arial', 13)).grid(column=2, row=10, columnspan=3, sticky=W)
 
 #INPUT CSV BUTTON AND LABEL INDICATING WHICH FILE IS OPEN
 selectfilebutton = ttk.Button(mainframe, text='Select Input File', command=opentxt).grid(column=3, row=10, sticky=E)
@@ -702,7 +765,7 @@ ttk.Label(mainframe, textvariable=filename_input, width=90, font=('Arial', 10)).
 ttk.Label(mainframe, text='Step 2: Select output directory: ', font=('Arial', 13)).grid(column=2, row=18, sticky=W)
 selectfilebutton = ttk.Button(mainframe, text='Select Output Directory', command=prewritefile).grid(column=3, row=18, sticky=E)
 ttk.Label(mainframe, text='Directory selected: ', font=('Arial', 11)).grid(column=2, row=19, sticky=W)
-ttk.Label(mainframe, textvariable=txt_name, width=50, font=('Arial', 10)).grid(column=2, row=20, columnspan=3, sticky=W)
+ttk.Label(mainframe, textvariable=txt_name, width=70, font=('Arial', 10)).grid(column=2, row=20, columnspan=3, sticky=W)
 
 #-------STEP 4: CHOOSE AN ACTION------#
 
@@ -713,35 +776,37 @@ ttk.Label(mainframe, text='Step 3: Choose a query: \n', font=('Arial', 13)).grid
 
 #SQL Actions
 
-getaos = ttk.Button(mainframe, text='Get archival objects', width=40, command=get_archival_objects).grid(column=2, row=22, sticky=W)
-getlocations = ttk.Button(mainframe, text='Get locations', width=40, command=get_locations).grid(column=3, row=22, sticky=W)
-gettcs = ttk.Button(mainframe, text='Get top containers', width=40, command=get_top_containers).grid(column=2, row=23, sticky=W)
-getcps = ttk.Button(mainframe, text='Get container profiles', width=40, command=get_container_profiles).grid(column=3, row=23, sticky=W)
-getresourcerestricts = ttk.Button(mainframe, text='Get resource-level restrictions', width=40, command=get_resource_restrictions).grid(column=2, row=24, sticky=W)
-getaorestricts = ttk.Button(mainframe, text='Get archival object-level restrictions', width=40, command=get_ao_restrictions).grid(column=3, row=24, sticky=W)
-getaos = ttk.Button(mainframe, text='Get container list', width=40, command=get_archobj_instances).grid(column=2, row=25, sticky=W)
-getlps = ttk.Button(mainframe, text='Get location profiles', width=40, command=get_location_profiles).grid(column=3, row=25, sticky=W)
-barcodeaudit = ttk.Button(mainframe, text='Run barcode audit', width=40, command=barcode_audit).grid(column=2, row=26, sticky=W)
-getaccess = ttk.Button(mainframe, text='Get access notes', width=40, command=get_access_notes).grid(column=3, row=26, sticky=W)
+getaos = ttk.Button(mainframe, text='Get archival objects', width=40, command=get_archival_objects).grid(column=2, row=22, sticky=N+S)
+getlocations = ttk.Button(mainframe, text='Get locations', width=40, command=get_locations).grid(column=3, row=22, sticky=N+S)
+gettcs = ttk.Button(mainframe, text='Get top containers', width=40, command=get_top_containers).grid(column=2, row=23, sticky=N+S)
+getcps = ttk.Button(mainframe, text='Get container profiles', width=40, command=get_container_profiles).grid(column=3, row=23, sticky=N+S)
+getresourcerestricts = ttk.Button(mainframe, text='Get resource-level restrictions', width=40, command=get_resource_restrictions).grid(column=2, row=24, sticky=N+S)
+getaorestricts = ttk.Button(mainframe, text='Get archival object-level restrictions', width=40, command=get_ao_restrictions).grid(column=3, row=24, sticky=N+S)
+getaos = ttk.Button(mainframe, text='Get container list', width=40, command=get_archobj_instances).grid(column=2, row=25, sticky=N+S)
+getlps = ttk.Button(mainframe, text='Get location profiles', width=40, command=get_location_profiles).grid(column=3, row=25, sticky=N+S)
+barcodeaudit = ttk.Button(mainframe, text='Run barcode audit', width=40, command=barcode_audit).grid(column=2, row=26, sticky=N+S)
+getaccess = ttk.Button(mainframe, text='Get access notes', width=40, command=get_access_notes).grid(column=3, row=26, sticky=N+S)
+get_boxes = ttk.Button(mainframe, text='Get distinct box list', width=40, command=get_boxes).grid(column=2, row=27, sticky=N+S)
+get_mars = ttk.Button(mainframe, text='Get machine-actionable restrictions', width=40, command=get_mars).grid(column=3, row=27, sticky=N+S)
 
 #-------STEP 5: REVIEW OUTPUT------#
 
 #REVIEW OUTPUT HEADER
-ttk.Label(mainframe, text='\nStep 4: Review output: ', font=('Arial', 13)).grid(column=2, row=27, sticky=W)
-ttk.Label(mainframe, textvariable=script_status, font=('Arial', 11)).grid(column=3, row=27, sticky=E)
+ttk.Label(mainframe, text='\nStep 4: Review output: ', font=('Arial', 13)).grid(column=2, row=28, sticky=W)
+ttk.Label(mainframe, textvariable=script_status, font=('Arial', 11)).grid(column=3, row=28, sticky=E)
 
 #VIEW OUTPUT FILE BUTTON AND LABEL INDICATING WHICH FILE IS OPEN
-selectfilebutton = ttk.Button(mainframe, text='View Output File', command=openoutput).grid(column=3, row=28, sticky=E)
-ttk.Label(mainframe, text='File selected: ', font=('Arial', 11)).grid(column=2, row=28, sticky=W)
-ttk.Label(mainframe, textvariable=txt_file, width=70, font=('Arial', 10)).grid(column=2, row=29, columnspan=3, sticky=W)
+selectfilebutton = ttk.Button(mainframe, text='View Output File', command=openoutput).grid(column=3, row=29, sticky=N+E)
+ttk.Label(mainframe, text='File selected: ', font=('Arial', 11)).grid(column=2, row=29, sticky=W)
+ttk.Label(mainframe, textvariable=txt_file, width=70, font=('Arial', 10)).grid(column=2, row=30, columnspan=3, sticky=W)
 
 #VIEW ERROR LOG BUTTON
-errorlogbutton = ttk.Button(mainframe, text='View Error Log', command=openerrorlog).grid(column=3, row=30, sticky=E)
-clearinputs = ttk.Button(mainframe, text='Clear All Inputs', command=clear_inputs).grid(column=3, row=31, sticky=S+E)
+errorlogbutton = ttk.Button(mainframe, text='View Error Log', command=openerrorlog).grid(column=3, row=31, sticky=N+E)
+clearinputs = ttk.Button(mainframe, text='Clear All Inputs', command=clear_inputs).grid(column=3, row=32, sticky=N+E)
 
 #RECORD UPDATE SUMMARY LABELS
-ttk.Label(mainframe, text='Rows returned: ', width=20, font=('Arial', 11)).grid(column=2, row=30, sticky=W)
-ttk.Label(mainframe, textvariable=update_attempts, width=20, font=('Arial', 10)).grid(column=3, row=30, sticky=W)
+ttk.Label(mainframe, text='Rows returned: ', width=20, font=('Arial', 11)).grid(column=2, row=31, sticky=W)
+ttk.Label(mainframe, textvariable=update_attempts, width=20, font=('Arial', 10)).grid(column=3, row=31, sticky=W)
 
 #----------------------------------------MORE MAINFRAME AND CANVAS STUFF-------------------------------------#
 
